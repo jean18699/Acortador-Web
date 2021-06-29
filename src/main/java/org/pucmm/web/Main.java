@@ -6,6 +6,7 @@ import org.pucmm.web.Controlador.DashboardControlador;
 import org.pucmm.web.Controlador.URLControlador;
 import org.pucmm.web.Servicio.BootStrapServices;
 import org.pucmm.web.Servicio.DataBaseServices;
+import org.pucmm.web.Servicio.URLServices;
 
 public class Main {
 
@@ -31,7 +32,6 @@ public class Main {
 
 
         Javalin app = Javalin.create(config -> {
-            config.addStaticFiles("/ejemplos/now-ui");
             config.addStaticFiles("/vistas");
             config.registerPlugin(new RouteOverviewPlugin("/rutas"));
             config.enableCorsForAllOrigins();
@@ -40,6 +40,8 @@ public class Main {
         //Clases gestoras de rutas
         new DashboardControlador(app).aplicarRutas();
         new URLControlador(app).aplicarRutas();
+
+
     }
 
     private static int getHerokuAssignedPort() {

@@ -3,6 +3,7 @@ package org.pucmm.web.Controlador;
 import io.javalin.Javalin;
 import io.javalin.plugin.rendering.JavalinRenderer;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
+import org.pucmm.web.Servicio.URLServices;
 
 public class URLControlador {
 
@@ -14,13 +15,16 @@ public class URLControlador {
         JavalinRenderer.register(JavalinThymeleaf.INSTANCE, ".html");
     }
 
-
     public void aplicarRutas() throws NumberFormatException {
 
-        app.post("/:URL", ctx -> {
+        app.get("/acortar/*", ctx -> {
+            String url = ctx.req.getPathInfo().substring(9);
+            String urlAcortada = URLServices.getInstance().acortarURL(url);
+            System.out.println(urlAcortada);
+        });
 
-
-
+        app.get("/:url", ctx -> {
+           ctx.redirect("http://"+URLServices.getInstance().expandirURL(ctx.pathParam("url")));
         });
 
 

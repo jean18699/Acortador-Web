@@ -42,6 +42,7 @@ dependencies {
     compile 'org.hibernate:hibernate-core:5.4.17.Final'
     compile 'org.hibernate:hibernate-entitymanager:5.4.17.Final'
 
-    compile 'google-api-services-urlshortener-v1-rev22-1.17.0-rc.jar'
+
+    compile "com.github.romain-warnan:simple-java-bitly:1.1"
 
 }

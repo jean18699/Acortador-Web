@@ -8,7 +8,8 @@ public class URL {
 
     @Id
     private long id;
-    private String direccion;
+    private String origen; //Origen que se va a acortar
+    private String direccion; //direccion acortada
 
     public URL() {}
 
@@ -18,6 +19,14 @@ public class URL {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getOrigen() {
+        return origen;
+    }
+
+    public void setOrigen(String origen) {
+        this.origen = origen;
     }
 
     public String getDireccion() {
