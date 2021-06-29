@@ -3,6 +3,7 @@ package org.pucmm.web;
 import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
 import org.pucmm.web.Controlador.DashboardControlador;
+import org.pucmm.web.Controlador.URLControlador;
 import org.pucmm.web.Servicio.BootStrapServices;
 import org.pucmm.web.Servicio.DataBaseServices;
 
@@ -38,7 +39,7 @@ public class Main {
 
         //Clases gestoras de rutas
         new DashboardControlador(app).aplicarRutas();
-
+        new URLControlador(app).aplicarRutas();
     }
 
     private static int getHerokuAssignedPort() {
