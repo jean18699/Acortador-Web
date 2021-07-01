@@ -17,8 +17,8 @@ public class DashboardControlador {
 
     public void aplicarRutas() throws NumberFormatException {
 
-        app.get("/", ctx -> {
-            ctx.render("/vistas/dashboard.html");
+        app.get("/dashboard", ctx -> {
+            ctx.render("/vistas/templates/index.html");
         });
 
 

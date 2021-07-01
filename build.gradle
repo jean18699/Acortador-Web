@@ -35,6 +35,10 @@ dependencies {
     //Convertir objeto a json
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
 
+    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+
+
     // https://mvnrepository.com/artifact/org.jasypt/jasypt
     implementation group: 'org.jasypt', name: 'jasypt', version: '1.9.2'
 

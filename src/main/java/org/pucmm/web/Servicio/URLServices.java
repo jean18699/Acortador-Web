@@ -1,11 +1,13 @@
 package org.pucmm.web.Servicio;
 
-import fr.plaisance.bitly.Bit;
-import fr.plaisance.bitly.Bitly;
-import org.pucmm.web.Controlador.URLControlador;
+import org.pucmm.web.Modelo.URL;
 
-import java.util.HashMap;
-import java.util.Random;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import java.util.*;
+
+import static io.javalin.Javalin.log;
 
 public class URLServices {
 
@@ -15,14 +17,16 @@ public class URLServices {
 
     private char caracteres[]; //Variable donde almacenaremos los 62 posibles caracteres de una URL
     private int longitud_url;
-    private String dominioURL; //Aqui se especifica un dominio personalizado para la URL
+    public List<URL> urlsCliente;
+
+    GestionDb gestionDb = new GestionDb(URL.class);
 
     public URLServices()
     {
         keyMap = new HashMap<String, String>();
         valueMap = new HashMap<String, String>();
+        urlsCliente = new ArrayList<>();
         longitud_url = 5;
-        dominioURL = "http://localhost:7000";
 
         String alfabeto = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         int cantidad_letras = alfabeto.length();
@@ -47,32 +51,50 @@ public class URLServices {
     }
 
 
-    public String acortarURL(String url)
+    private String acortarURL(String url)
     {
-        String urlAcortada = "";
-        url = formatearURL(url);
+        EntityManager em = gestionDb.getEntityManager();
 
-        if (valueMap.containsKey(url)) {
-            url = dominioURL + "/" + valueMap.get(url);
-        } else {
-            urlAcortada = dominioURL + "/" + getKey(url);
+        try{
+            String urlAcortada = "";
+            url = formatearURL(url);
+
+            if(gestionDb.find(url) != null)
+            {
+                url = em.find(URL.class,url).getDireccionAcortada();
+            }else
+            {
+                urlAcortada = getClave(url);
+            }
+
+            return urlAcortada;
+
+        }finally {
+            em.close();
         }
 
-		return urlAcortada;
+
+       /* if (valueMap.containsKey(url)) {
+           //url = dominioURL + "/" + valueMap.get(url);
+            url = valueMap.get(url);
+        } else {
+            //urlAcortada = dominioURL + "/" + getClave(url);
+        }
+*/
+
     }
+
 
     public String expandirURL(String urlAcortada)
     {
-        String url = "";
-        //System.out.println(urlAcortada);
-        //String key = urlAcortada.substring(dominioURL.length()+1);
-        url = keyMap.get(urlAcortada);
-        return url;
+        URL url = (URL) gestionDb.find(urlAcortada);
+        System.out.println(url.getOrigen());
+        return url.getOrigen();
     }
 
 
     //Funcion para que la url escrita de varias maneras siga siendo valida
-    public String formatearURL(String url)
+    private String formatearURL(String url)
     {
         if (url.startsWith("http://"))
             url = url.substring(7);
@@ -86,41 +108,104 @@ public class URLServices {
     }
 
 
-    /*
-     * Get Key method
-     */
-    private String getKey(String longURL) {
-        String key;
-        key = generateKey();
-        keyMap.put(key, longURL);
-        valueMap.put(longURL, key);
-        return key;
+    private String getClave(String longURL) {
+        String clave = generarClave();
+        keyMap.put(clave, longURL);
+        valueMap.put(longURL, clave);
+        return clave;
     }
 
-    // generateKey
-    private String generateKey() {
+
+    //Funcion para generar la clave de 5 digitos de la url
+    private String generarClave() {
 
         Random rand = new Random();
+        String clave = "";
 
-        String key = "";
-        boolean flag = true;
-        while (flag) {
-            key = "";
+        while (true) {
+            clave = "";
+
+            //Se va a ir creando una clave aleatorea
             for (int i = 0; i <= longitud_url; i++) {
-                key += caracteres[rand.nextInt(62)];
+                clave += caracteres[rand.nextInt(62)];
             }
-            // System.out.println("Iteration: "+ counter + "Key: "+ key);
-            if (!keyMap.containsKey(key)) {
-                flag = false;
+
+            //Si la clave se encuentra en el mapa de claves (keymap) significa que ya existe y se termina la generacion
+            if (!keyMap.containsKey(clave)) {
+                break;
             }
         }
-        return key;
+        return clave;
+
+
+
+    }
+
+    public void nuevaUrlAcortada(String url)
+    {
+        URL nuevaURL = new URL();
+        nuevaURL.setOrigen(url);
+        nuevaURL.setDireccionAcortada(acortarURL(url));
+        urlsCliente.add(nuevaURL);
+        gestionDb.crear(nuevaURL);
+    }
+
+    public void eliminarURL(String urlAcortada)
+    {
+        URL url = (URL) gestionDb.find(urlAcortada);
+        gestionDb.eliminar(url);
+    }
+
+    public void contarVisita(String urlAcortada, String cliente)
+    {
+
+        URL url = (URL) gestionDb.find(urlAcortada);
+
+        url.setVisitas(url.getVisitas()+1);
+
+        if(cliente.contains("Google Chrome"))
+        {
+            url.setChrome(url.getChrome() + 1);
+        }
+        else if(cliente.contains("Mozilla Firefox"))
+        {
+            url.setFirefox(url.getFirefox() + 1);
+        }
+        else if(cliente.contains("Safari"))
+        {
+            url.setSafari(url.getSafari() + 1);
+        }
+        else if(cliente.contains("Opera"))
+        {
+            url.setOpera(url.getOpera() + 1);
+        }
+        else if(cliente.contains("Microsoft Edge"))
+        {
+            url.setEdge(url.getEdge() + 1);
+        }
+        else if(cliente.contains("Postman"))
+        {
+            url.setPostman(url.getPostman() + 1);
+        }
+        else{
+            url.setUnknownBrowser(url.getUnknownBrowser()+1);
+        }
+
+        gestionDb.editar(url);
+
+    }
+
+    public List<URL> getURLs()
+    {
+        return gestionDb.findAll();
     }
 
 
+    public List<URL> getUrlsCliente() {
+        return urlsCliente;
+    }
 
-
-
-
-
+    public void setUrlsCliente(List<URL> urlsCliente) {
+        this.urlsCliente = urlsCliente;
+    }
 }

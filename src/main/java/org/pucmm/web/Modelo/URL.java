@@ -1,26 +1,58 @@
 package org.pucmm.web.Modelo;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
 public class URL {
 
     @Id
-    private long id;
+    @Column(name="id")
+    private String direccionAcortada; //direccion acortada
     private String origen; //Origen que se va a acortar
-    private String direccion; //direccion acortada
+
+    @Column(name = "cantidad_visitas")
+    private long visitas = 0L;
+
+    //Variables para indicar la cantidad de veces que ha sido accedido dependiendo del navegador
+    @Column(name = "Chrome")
+    private Long chrome = 0L;
+
+    @Column(name = "Firefox")
+    private Long firefox = 0L;
+
+    @Column(name = "Safari")
+    private Long safari = 0L;
+
+    @Column(name = "Opera")
+    private Long opera = 0L;
+
+    @Column(name = "Edge")
+    private Long edge = 0L;
+
+    @Column(name = "Internet_Explorer")
+    private Long internetExplorer = 0L;
+
+    //Para pruebas, postman
+    @Column(name = "Postman")
+    private Long postman = 0L;
+
+    @Column(name = "Navegador_desconocido")
+    private Long unknownBrowser = 0L;
+
 
     public URL() {}
 
-    public long getId() {
+    /*public long getId() {
         return id;
     }
 
     public void setId(long id) {
         this.id = id;
     }
-
+*/
     public String getOrigen() {
         return origen;
     }
@@ -29,11 +61,83 @@ public class URL {
         this.origen = origen;
     }
 
-    public String getDireccion() {
-        return direccion;
+    public String getDireccionAcortada() {
+        return direccionAcortada;
     }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
+    public void setDireccionAcortada(String direccion) {
+        this.direccionAcortada = direccion;
+    }
+
+    public long getVisitas() {
+        return visitas;
+    }
+
+    public void setVisitas(long visitas) {
+        this.visitas = visitas;
+    }
+
+    public Long getChrome() {
+        return chrome;
+    }
+
+    public void setChrome(Long chrome) {
+        this.chrome = chrome;
+    }
+
+    public Long getFirefox() {
+        return firefox;
+    }
+
+    public void setFirefox(Long firefox) {
+        this.firefox = firefox;
+    }
+
+    public Long getSafari() {
+        return safari;
+    }
+
+    public void setSafari(Long safari) {
+        this.safari = safari;
+    }
+
+    public Long getOpera() {
+        return opera;
+    }
+
+    public void setOpera(Long opera) {
+        this.opera = opera;
+    }
+
+    public Long getEdge() {
+        return edge;
+    }
+
+    public void setEdge(Long edge) {
+        this.edge = edge;
+    }
+
+    public Long getInternetExplorer() {
+        return internetExplorer;
+    }
+
+    public void setInternetExplorer(Long internetExplorer) {
+        this.internetExplorer = internetExplorer;
+    }
+
+    public Long getPostman() {
+        return postman;
+    }
+
+    public void setPostman(Long postman) {
+        this.postman = postman;
+    }
+
+    public Long getUnknownBrowser() {
+        return unknownBrowser;
+    }
+
+    public void setUnknownBrowser(Long unknown) {
+        this.unknownBrowser = unknown;
     }
 }
