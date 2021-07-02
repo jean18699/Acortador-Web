@@ -1,9 +1,8 @@
 package org.pucmm.web.Modelo;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 public class URL {
@@ -13,7 +12,7 @@ public class URL {
     private String direccionAcortada; //direccion acortada
     private String origen; //Origen que se va a acortar
 
-    @Column(name = "cantidad_visitas")
+  /*  @Column(name = "cantidad_visitas")
     private long visitas = 0L;
 
     //Variables para indicar la cantidad de veces que ha sido accedido dependiendo del navegador
@@ -41,18 +40,13 @@ public class URL {
 
     @Column(name = "Navegador_desconocido")
     private Long unknownBrowser = 0L;
+*/
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<Cliente> clientes;
 
 
     public URL() {}
 
-    /*public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-*/
     public String getOrigen() {
         return origen;
     }
@@ -68,7 +62,7 @@ public class URL {
     public void setDireccionAcortada(String direccion) {
         this.direccionAcortada = direccion;
     }
-
+/*
     public long getVisitas() {
         return visitas;
     }
@@ -139,5 +133,13 @@ public class URL {
 
     public void setUnknownBrowser(Long unknown) {
         this.unknownBrowser = unknown;
+    }
+*/
+    public Set<Cliente> getClientes() {
+        return clientes;
+    }
+
+    public void setClientes(Set<Cliente> clientes) {
+        this.clientes = clientes;
     }
 }

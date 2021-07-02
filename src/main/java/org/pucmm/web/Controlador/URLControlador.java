@@ -3,13 +3,12 @@ package org.pucmm.web.Controlador;
 import io.javalin.Javalin;
 import io.javalin.plugin.rendering.JavalinRenderer;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
-import org.json.simple.JSONArray;
-import org.pucmm.web.Modelo.URL;
 import org.pucmm.web.Servicio.URLServices;
 
 import javax.servlet.http.Cookie;
-import java.net.CookieStore;
-import java.util.ArrayList;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,48 +31,20 @@ public class URLControlador {
     public void aplicarRutas() throws NumberFormatException {
 
         app.get("/",ctx -> {
-
-          /*  for(Map.Entry<String, String> url : ctx.cookieMap().entrySet())
-            {
-                System.out.println(url.getKey());
-                System.out.println(url.getValue());
-            }*/
-
             modelo.put("urls", ctx.cookieMap().entrySet());
-            //modelo.put("urls_acortadas", ctx.cookieMap().keySet());
             ctx.render("vistas/templates/index.html",modelo);
-
         });
 
 
         app.post("/acortar", ctx -> {
             URLServices.getInstance().nuevaUrlAcortada(ctx.formParam("url"));
-
             for(int i = 0; i < URLServices.getInstance().getUrlsCliente().size(); i++)
             {
                 Cookie cookie_url = new Cookie(URLServices.getInstance().getUrlsCliente().get(i).getDireccionAcortada(),URLServices.getInstance().getUrlsCliente().get(i).getOrigen());
-                cookie_url.setMaxAge((int) 15768000000L); //6 meses
+                cookie_url.setMaxAge(157680);
                 ctx.res.addCookie(cookie_url);
             }
-
-
-
-
-
-            //modelo.put("URLs", URLServices.getInstance().getURLs());
-
-
-            //Guardamos la URL en el cliente hasta que el usuario se registre
-           // Cookie cookie_url = new Cookie("url",ctx.formParam("url"));
-             //Cookie cookie_password = new Cookie("password_recordado",encryptedPassword);
-           // cookie_usuario.setMaxAge(604800); //una semana
-            //cookie_password.setMaxAge(604800);
-
-
             ctx.redirect("/");
-
-
-
         });
 
 
@@ -86,14 +57,24 @@ public class URLControlador {
 
         app.get("/redireccionar/:url", ctx -> {
 
-            System.out.println(ctx.pathParam("url"));
-
             //Obteniendo el cliente (navegador) desde donde se accede
             String[] InfoNavegador = ctx.req.getHeader("sec-ch-ua").split(",");
             String[] DatosCliente = InfoNavegador[1].split(";");
             String nombreCliente = DatosCliente[0];
+            LocalDate fechaAcceso = LocalDate.now();
 
-            URLServices.getInstance().contarVisita(ctx.pathParam("url"),nombreCliente);
+            //Sistema operativo
+            String os = System.getProperty("os.name");
+
+            //Para obtener la direccion IP
+            InetAddress ip;
+            try
+            {
+                ip = InetAddress.getLocalHost();
+                URLServices.getInstance().visitar(ctx.pathParam("url"),nombreCliente,ip.getHostAddress(),fechaAcceso,os);
+            }catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
 
             String direccion = URLServices.getInstance().expandirURL(ctx.pathParam("url"));
             if(direccion.contains("https:"))
@@ -104,10 +85,7 @@ public class URLControlador {
                 ctx.redirect("http://"+ URLServices.getInstance().expandirURL(ctx.pathParam("url")));
             }
 
-
         });
-
-
 
     }
 

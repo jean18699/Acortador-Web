@@ -1,10 +1,14 @@
 package org.pucmm.web.Servicio;
 
+import org.pucmm.web.Modelo.Cliente;
 import org.pucmm.web.Modelo.URL;
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 import static io.javalin.Javalin.log;
@@ -88,7 +92,6 @@ public class URLServices {
     public String expandirURL(String urlAcortada)
     {
         URL url = (URL) gestionDb.find(urlAcortada);
-        System.out.println(url.getOrigen());
         return url.getOrigen();
     }
 
@@ -156,40 +159,51 @@ public class URLServices {
         gestionDb.eliminar(url);
     }
 
-    public void contarVisita(String urlAcortada, String cliente)
+    public void visitar(String urlAcortada, String navegador, String direccionIP, LocalDate fechaAcceso, String sistemaOperativo)
     {
 
         URL url = (URL) gestionDb.find(urlAcortada);
+        Cliente cliente = new Cliente(navegador,direccionIP,fechaAcceso,sistemaOperativo);
 
-        url.setVisitas(url.getVisitas()+1);
+        GestionDb gestionDbCliente = new GestionDb(Cliente.class);
+        gestionDbCliente.crear(cliente);
 
-        if(cliente.contains("Google Chrome"))
+        url.getClientes().add(cliente);
+
+      /*  url.setVisitas(url.getVisitas()+1);
+
+        if(navegador.contains("Google Chrome"))
         {
             url.setChrome(url.getChrome() + 1);
         }
-        else if(cliente.contains("Mozilla Firefox"))
+        else if(navegador.contains("Mozilla Firefox"))
         {
             url.setFirefox(url.getFirefox() + 1);
         }
-        else if(cliente.contains("Safari"))
+        else if(navegador.contains("Safari"))
         {
             url.setSafari(url.getSafari() + 1);
         }
-        else if(cliente.contains("Opera"))
+        else if(navegador.contains("Opera"))
         {
             url.setOpera(url.getOpera() + 1);
         }
-        else if(cliente.contains("Microsoft Edge"))
+        else if(navegador.contains("Microsoft Edge"))
         {
             url.setEdge(url.getEdge() + 1);
         }
-        else if(cliente.contains("Postman"))
+        else if(navegador.contains("Internet Explorer"))
+        {
+            url.setInternetExplorer(url.getInternetExplorer() + 1);
+        }
+        else if(navegador.contains("Postman"))
         {
             url.setPostman(url.getPostman() + 1);
         }
         else{
             url.setUnknownBrowser(url.getUnknownBrowser()+1);
         }
+        */
 
         gestionDb.editar(url);
 
@@ -208,4 +222,52 @@ public class URLServices {
     public void setUrlsCliente(List<URL> urlsCliente) {
         this.urlsCliente = urlsCliente;
     }
+
+    public long getCantidadVisitas(String urlAcortada)
+    {
+        URL url = (URL) gestionDb.find(urlAcortada);
+        if(url != null)
+        {
+            return url.getClientes().size();
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public long getCantidadVisitasFecha(String urlAcortada, String fecha)
+    {
+        URL url = (URL) gestionDb.find(urlAcortada);
+        long contador = 0;
+        for(Cliente cliente : url.getClientes())
+        {
+            if(cliente.getFechaAcceso().toString().equalsIgnoreCase(fecha))
+            {
+                contador++;
+            }
+        }
+        return contador;
+    }
+
+    public long getCantidadVisitasNavegador(String urlAcortada, String navegador)
+    {
+        URL url = (URL) gestionDb.find(urlAcortada);
+        long contador = 0;
+        for(Cliente cliente : url.getClientes())
+        {
+            if(cliente.getNavegador().toString().equalsIgnoreCase(navegador))
+            {
+                contador++;
+            }
+        }
+        return contador;
+    }
+
+    public URL getURL(String urlAcortada)
+    {
+        URL url = (URL) gestionDb.find(urlAcortada);
+        return url;
+    }
+
 }
