@@ -124,25 +124,9 @@
 
             <!--Configurando grafico de accesos a la url-->
             <div class="panel-header panel-header-lg">
-                <div id="qrcode"></div>
+
                 <canvas id="myChart" th:inline="text">
                     <script>
-                        var qrcode = new QRCode("qrcode", {
-                            text: "http://localhost:7000/dashboard",
-                            width: 128,
-                            height: 128,
-                            colorDark : "#000000",
-                            colorLight : "#ffffff",
-                            correctLevel : QRCode.CorrectLevel.H
-                        });
-
-                        handleQrCodeResult(result: string) {
-                            console.log("Result", result);
-                            this.qrResult = result;
-
-                            // This line will redirect to the link you want
-                            window.location.href = "Insert link here";    // Maybe: document.getElementById('link')
-                        }
 
 
                         var fechas = [];
@@ -262,39 +246,7 @@
             </div>
             <div class="content">
                 <div class="row">
-                    <div class="col-md-6">
-
-                            <div class="card  card-tasks">
-                                <div class="card-header ">
-                                    <h4 class="card-title">URLs Registradas</h4>
-                                </div>
-                                <div class="card-body ">
-                                    <div class="table-full-width table-responsive">
-                                        <table class="table">
-                                            <tbody>
-                                            <tr th:each="url : ${urls}">
-                                                <td class="text-left">
-                                                    <a th:text="${dominio}+${url.direccionAcortada}" th:href="${dominio}+${url.direccionAcortada}" target="_blank">A</a>
-                                                </td>
-                                                <td th:text="${url.getOrigen()}" class="text-left"></td>
-                                               <td class="td-actions text-right">
-                                                   <form th:action="@{/dashboard/infoURL}" method="post">
-                                                       <button name="url" th:value="${url.direccionAcortada}" type="submit" rel="tooltip" title="" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
-                                                           <i class="now-ui-icons business_chart-bar-32"></i>
-                                                       </button>
-                                                   </form>
-                                                       <button type="button" rel="tooltip" title="" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
-                                                           <i class="now-ui-icons ui-1_simple-remove"></i>
-                                                       </button>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                    </div>
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <div class="card card-chart">
                             <div class="card-header">
                                 <h5 class="card-category">Seleccione una fecha</h5>
@@ -325,6 +277,42 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="card  card-tasks">
+                            <div class="card-header ">
+                                <h4 class="card-title">URLs Registradas</h4>
+                            </div>
+                            <div class="card-body ">
+                                <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                                    <div class="table-full-width table-responsive ">
+                                    <table class="table">
+                                        <tbody>
+                                        <tr th:each="url : ${urls}">
+                                            <td class="text-left">
+                                                <a th:text="${dominio}+${url.direccionAcortada}" th:href="${dominio}+${url.direccionAcortada}" target="_blank">A</a>
+                                            </td>
+                                            <td th:text="${url.getOrigen()}" class="text-left"></td>
+                                            <td class="td-actions text-right">
+                                                <form th:action="@{/dashboard/infoURL}" method="post">
+                                                    <button name="url" th:value="${url.direccionAcortada}" type="submit" rel="tooltip" title="" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
+                                                        <i class="now-ui-icons business_chart-bar-32"></i>
+                                                    </button>
+                                                </form>
+                                                <button type="button" rel="tooltip" title="" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
+                                                    <i class="now-ui-icons ui-1_simple-remove"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

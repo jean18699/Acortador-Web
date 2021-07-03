@@ -20,6 +20,10 @@
     <link href="../assets/css/tablas.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--QR code-->
+    <script src="../assets/davidshimjs-qrcodejs-04f46c6/jquery.min.js"></script>
+    <script src="../assets/davidshimjs-qrcodejs-04f46c6/qrcode.js"></script>
+    <script src="../assets/davidshimjs-qrcodejs-04f46c6/qrcode.min.js"></script>
 </head>
 <body>
     <div class="wrapper ">
@@ -120,8 +124,10 @@
 
             <!--Configurando grafico de accesos a la url-->
             <div class="panel-header panel-header-lg">
+
                 <canvas id="myChart" th:inline="text">
                     <script>
+
 
                         var fechas = [];
                         var urlActual = [];
@@ -240,39 +246,7 @@
             </div>
             <div class="content">
                 <div class="row">
-                    <div class="col-md-6">
-
-                            <div class="card  card-tasks">
-                                <div class="card-header ">
-                                    <h4 class="card-title">URLs Registradas</h4>
-                                </div>
-                                <div class="card-body ">
-                                    <div class="table-full-width table-responsive">
-                                        <table class="table">
-                                            <tbody>
-                                            <tr th:each="url : ${urls}">
-                                                <td class="text-left">
-                                                    <a th:text="${dominio}+${url.direccionAcortada}" th:href="${dominio}+${url.direccionAcortada}" target="_blank">A</a>
-                                                </td>
-                                                <td th:text="${url.getOrigen()}" class="text-left"></td>
-                                               <td class="td-actions text-right">
-                                                   <form th:action="@{/dashboard/infoURL}" method="post">
-                                                       <button name="url" th:value="${url.direccionAcortada}" type="submit" rel="tooltip" title="" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
-                                                           <i class="now-ui-icons business_chart-bar-32"></i>
-                                                       </button>
-                                                   </form>
-                                                       <button type="button" rel="tooltip" title="" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
-                                                           <i class="now-ui-icons ui-1_simple-remove"></i>
-                                                       </button>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                    </div>
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <div class="card card-chart">
                             <div class="card-header">
                                 <h5 class="card-category">Seleccione una fecha</h5>
@@ -303,6 +277,42 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="card  card-tasks">
+                            <div class="card-header ">
+                                <h4 class="card-title">URLs Registradas</h4>
+                            </div>
+                            <div class="card-body ">
+                                <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                                    <div class="table-full-width table-responsive ">
+                                    <table class="table">
+                                        <tbody>
+                                        <tr th:each="url : ${urls}">
+                                            <td class="text-left">
+                                                <a th:text="${dominio}+${url.direccionAcortada}" th:href="${dominio}+${url.direccionAcortada}" target="_blank">A</a>
+                                            </td>
+                                            <td th:text="${url.getOrigen()}" class="text-left"></td>
+                                            <td class="td-actions text-right">
+                                                <form th:action="@{/dashboard/infoURL}" method="post">
+                                                    <button name="url" th:value="${url.direccionAcortada}" type="submit" rel="tooltip" title="" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
+                                                        <i class="now-ui-icons business_chart-bar-32"></i>
+                                                    </button>
+                                                </form>
+                                                <button type="button" rel="tooltip" title="" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
+                                                    <i class="now-ui-icons ui-1_simple-remove"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
