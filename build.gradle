@@ -35,11 +35,18 @@ dependencies {
     //Convertir objeto a json
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
 
+    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+
+
     // https://mvnrepository.com/artifact/org.jasypt/jasypt
     implementation group: 'org.jasypt', name: 'jasypt', version: '1.9.2'
 
     //ORM - Hibernate.
     compile 'org.hibernate:hibernate-core:5.4.17.Final'
     compile 'org.hibernate:hibernate-entitymanager:5.4.17.Final'
+
+
+    compile "com.github.romain-warnan:simple-java-bitly:1.1"
 
 }

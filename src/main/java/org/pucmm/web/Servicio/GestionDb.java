@@ -22,7 +22,7 @@ public class GestionDb<T> {
             if(Main.getModoConexion().equalsIgnoreCase("Heroku")){
                 emf = getConfiguracionBaseDatosHeroku();
             }else{
-                emf = Persistence.createEntityManagerFactory("POSTGRES_LOCAL");
+                emf = Persistence.createEntityManagerFactory("MiUnidadPersistencia");
             }
         }
         this.claseEntidad = claseEntidad;
