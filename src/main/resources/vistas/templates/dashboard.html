@@ -20,6 +20,10 @@
     <link href="../assets/css/tablas.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--QR code-->
+    <script src="../assets/davidshimjs-qrcodejs-04f46c6/jquery.min.js"></script>
+    <script src="../assets/davidshimjs-qrcodejs-04f46c6/qrcode.js"></script>
+    <script src="../assets/davidshimjs-qrcodejs-04f46c6/qrcode.min.js"></script>
 </head>
 <body>
     <div class="wrapper ">
@@ -120,8 +124,26 @@
 
             <!--Configurando grafico de accesos a la url-->
             <div class="panel-header panel-header-lg">
+                <div id="qrcode"></div>
                 <canvas id="myChart" th:inline="text">
                     <script>
+                        var qrcode = new QRCode("qrcode", {
+                            text: "http://localhost:7000/dashboard",
+                            width: 128,
+                            height: 128,
+                            colorDark : "#000000",
+                            colorLight : "#ffffff",
+                            correctLevel : QRCode.CorrectLevel.H
+                        });
+
+                        handleQrCodeResult(result: string) {
+                            console.log("Result", result);
+                            this.qrResult = result;
+
+                            // This line will redirect to the link you want
+                            window.location.href = "Insert link here";    // Maybe: document.getElementById('link')
+                        }
+
 
                         var fechas = [];
                         var urlActual = [];
