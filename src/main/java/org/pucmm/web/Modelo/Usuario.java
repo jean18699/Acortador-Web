@@ -11,13 +11,13 @@ import java.util.Set;
 public class Usuario {
     @Id
     private String user;
-    private String username;
+    private String name;
     private String password;
     private boolean admin;
 
-    public Usuario(String user, String username, String password, boolean admin){
+    public Usuario(String user, String name, String password, boolean admin){
         this.user = user;
-        this.username = username;
+        this.name = name;
         this.password = password;
         this.admin = admin;
     }
@@ -43,11 +43,11 @@ public class Usuario {
         this.user = user;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPassword() {
