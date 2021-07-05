@@ -6,7 +6,9 @@ import io.javalin.plugin.rendering.template.JavalinThymeleaf;
 import org.pucmm.web.Modelo.Cliente;
 import org.pucmm.web.Modelo.URL;
 import org.pucmm.web.Servicio.URLServices;
+import org.pucmm.web.Servicio.UsuarioServices;
 
+import javax.servlet.http.Cookie;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -33,11 +35,39 @@ public class DashboardControlador {
     public void aplicarRutas() throws NumberFormatException {
 
         app.get("/dashboard", ctx -> {
+
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else
+            {
+                //Colocando las URL almacenadas en la cookie dentro de la cuenta del usuario
+                for(Map.Entry<String, String> urlCliente : ctx.cookieMap().entrySet())
+                {
+                    URL url = URLServices.getInstance().getURL(urlCliente.getKey());
+                    if(url != null)
+                    {
+                        URLServices.getInstance().registrarURLUsuario(ctx.sessionAttribute("usuario"),url);
+                        ctx.removeCookie(urlCliente.getKey());
+                    }
+                }
+
+
+                /*if(URLServices.getInstance().getUrlsCliente().size() > 0)
+                {
+                    for(URL url_ : URLServices.getInstance().getUrlsCliente())
+                    {
+                        URL url = URLServices.getInstance().getURL(url_.getDireccionAcortada());
+                        URLServices.getInstance().registrarURLUsuario(ctx.sessionAttribute("usuario"),url);
+                    }
+                }*/
+
                 modelo.put("clientes",null);
                 modelo.put("visitasFechas","");
                 modelo.put("visitasFechas","");
-                modelo.put("urls", URLServices.getInstance().getURLs());
-            ctx.render("/vistas/templates/dashboard.html",modelo);
+                modelo.put("urls", UsuarioServices.getInstancia().getURLsByUsuario(ctx.sessionAttribute("usuario")));
+                ctx.render("/vistas/templates/dashboard.html",modelo);
+            }
         });
 
         app.get("/dashboard/infoURL", ctx -> {
@@ -54,8 +84,8 @@ public class DashboardControlador {
 
             for(Cliente cliente : url.getClientes())
             {
-               LocalDate date = cliente.getFechaAcceso();
-               fechas.add(date);
+                LocalDate date = cliente.getFechaAcceso();
+                fechas.add(date);
             }
 
             for(LocalDate fecha : fechas)
@@ -64,11 +94,11 @@ public class DashboardControlador {
             }
 
             modelo.put("urlActual", ctx.formParam("url"));
-           // modelo.put("dominio", dominio);
+            // modelo.put("dominio", dominio);
             modelo.put("fechaAcceso", "");
             modelo.put("fechas",fechas);
             modelo.put("visitasFechas",visitasFechas);
-          //  modelo.put("urls", URLServices.getInstance().getURLs());
+            //  modelo.put("urls", URLServices.getInstance().getURLs());
             ctx.render("/vistas/templates/dashboard.html",modelo);
         });
 

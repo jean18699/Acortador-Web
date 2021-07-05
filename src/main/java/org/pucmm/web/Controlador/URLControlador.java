@@ -3,15 +3,18 @@ package org.pucmm.web.Controlador;
 import io.javalin.Javalin;
 import io.javalin.plugin.rendering.JavalinRenderer;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
+import org.pucmm.web.Modelo.URL;
 import org.pucmm.web.Servicio.URLServices;
+import org.pucmm.web.Servicio.UsuarioServices;
 
 import javax.servlet.http.Cookie;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class URLControlador {
 
@@ -24,14 +27,14 @@ public class URLControlador {
     {
         this.app = app;
         modelo.put("dominio",dominio);
-
-
         JavalinRenderer.register(JavalinThymeleaf.INSTANCE, ".html");
     }
 
     public void aplicarRutas() throws NumberFormatException {
 
         app.get("/",ctx -> {
+
+            //modelo.put("urls", ctx.sessionAttribute("urlsGuardadas"+ctx.req.getRemoteAddr()));
             modelo.put("urls", ctx.cookieMap().entrySet());
             ctx.render("vistas/templates/index.html",modelo);
         });
@@ -39,15 +42,24 @@ public class URLControlador {
 
         app.post("/acortar", ctx -> {
             URLServices.getInstance().nuevaUrlAcortada(ctx.formParam("url"));
-            for(int i = 0; i < URLServices.getInstance().getUrlsCliente().size(); i++)
+            for(URL urlCliente : URLServices.getInstance().getUrlsCliente())
             {
-                Cookie cookie_url = new Cookie(URLServices.getInstance().getUrlsCliente().get(i).getDireccionAcortada(),URLServices.getInstance().getUrlsCliente().get(i).getOrigen());
+                Cookie cookie_url = new Cookie(urlCliente.getDireccionAcortada(),urlCliente.getOrigen());
                 cookie_url.setMaxAge(157680);
                 ctx.res.addCookie(cookie_url);
+
             }
             ctx.redirect("/");
         });
 
+        app.post("/acortar-registrar", ctx -> {
+
+
+            URLServices.getInstance().registrarURLUsuario(ctx.sessionAttribute("usuario"),
+                    URLServices.getInstance().nuevaUrlAcortada(ctx.formParam("url")));
+
+            ctx.redirect("/dashboard");
+        });
 
         app.get("/:url",ctx -> {
             if(!ctx.pathParam("url").equalsIgnoreCase("favicon.ico"))
