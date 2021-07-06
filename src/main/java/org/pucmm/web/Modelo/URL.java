@@ -1,11 +1,12 @@
 package org.pucmm.web.Modelo;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
 @Entity
-public class URL {
+public class URL implements Serializable {
 
     @Id
     @Column(name="id")

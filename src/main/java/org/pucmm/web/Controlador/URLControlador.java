@@ -3,20 +3,23 @@ package org.pucmm.web.Controlador;
 import io.javalin.Javalin;
 import io.javalin.plugin.rendering.JavalinRenderer;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
+import org.pucmm.web.Modelo.URL;
 import org.pucmm.web.Servicio.URLServices;
+import org.pucmm.web.Servicio.UsuarioServices;
 
 import javax.servlet.http.Cookie;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class URLControlador {
 
     private Javalin app;
-    private String dominio = "http://localhost:7000/";
+    private String dominio = "shorter.jgshopping.games/";
 
     Map<String, Object> modelo = new HashMap<>();
 
@@ -24,8 +27,6 @@ public class URLControlador {
     {
         this.app = app;
         modelo.put("dominio",dominio);
-
-
         JavalinRenderer.register(JavalinThymeleaf.INSTANCE, ".html");
     }
 
@@ -39,17 +40,40 @@ public class URLControlador {
 
         app.post("/acortar", ctx -> {
             URLServices.getInstance().nuevaUrlAcortada(ctx.formParam("url"));
-            for(int i = 0; i < URLServices.getInstance().getUrlsCliente().size(); i++)
+            for(URL urlCliente : URLServices.getInstance().getUrlsCliente())
             {
-                Cookie cookie_url = new Cookie(URLServices.getInstance().getUrlsCliente().get(i).getDireccionAcortada(),URLServices.getInstance().getUrlsCliente().get(i).getOrigen());
+                Cookie cookie_url = new Cookie(urlCliente.getDireccionAcortada(),urlCliente.getOrigen());
                 cookie_url.setMaxAge(157680);
                 ctx.res.addCookie(cookie_url);
+
             }
             ctx.redirect("/");
         });
 
+        app.post("/acortar-registrar", ctx -> {
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                URLServices.getInstance().registrarURLUsuario(ctx.sessionAttribute("usuario"), URLServices.getInstance().nuevaUrlAcortada(ctx.formParam("url")));
+                URLServices.getInstance().getUrlsCliente().clear();
+                ctx.redirect("/dashboard");
+            }
+        });
+
+        app.post("/url/eliminar", ctx -> {
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                URLServices.getInstance().eliminarURL(ctx.sessionAttribute("vistaUsuario"), ctx.formParam("eliminar"));
+                ctx.redirect("/dashboard");
+            }
+        });
+
 
         app.get("/:url",ctx -> {
+
             if(!ctx.pathParam("url").equalsIgnoreCase("favicon.ico"))
             {
                 ctx.redirect("redireccionar/"+ctx.pathParam("url"));

@@ -24,9 +24,7 @@
 <body>
     <div class="wrapper ">
         <div class="sidebar" data-color="orange">
-            <!--
-              Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
-          -->
+
             <div class="logo">
                 <a class="simple-text logo-mini">
                     AU
@@ -64,7 +62,7 @@
                                 <span class="navbar-toggler-bar bar3"></span>
                             </button>
                         </div>
-                        <a class="navbar-brand" th:text="'Dashboard de ' + ${usuarioActual.nombreUsuario}" href="/dashboard">Dashboard</a>
+                        <a class="navbar-brand"   th:text="'Dashboard de ' + ${verUsuario}">Dashboard</a>
                     </div>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -106,6 +104,7 @@
                         var fechas = [];
                         var urlActual = [];
 
+
                         /*<![CDATA[*/
                         var cantidadVisitas = [(@{${visitasFechas}})];
                         /*]]>*/
@@ -114,16 +113,16 @@
                         urlActual.push("[(${url})]");
                         ///*[/]*/
 
+
                         /*[# th:each="fecha : ${fechas}"]*/
                          fechas.push("[(${fecha})]");
                         ///*[/]*/
 
                         //Funcion para cargar el historial de acceso cuando se clickee una barra en el dashboard. Asi se vera el acceso obtenido desde esa fecha
                         function graphClickEvent(event, array){
-
-                            var enlace =  window.location.href +"/"+urlActual[0]+"/estadisticas/"+fechas[array[0].index].toString()//window.location.href+"/"+urlActual[0]+"/"+fechas[array[0].index].toString()
+                            var enlace =  window.location.href +"/"+urlActual[0]+"/estadisticas/"+fechas[array[0].index].toString()
+                            console.log(enlace)
                             window.location.replace(enlace)
-
                         }
 
 
@@ -258,7 +257,6 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-
                         <div class="card  card-tasks">
                             <div class="card-header ">
                                 <h4 class="card-title">URLs Registradas</h4>
@@ -274,29 +272,19 @@
                                                 </td>
                                                 <td th:text="${url.getOrigen()}" class="text-left"></td>
                                                 <td class="td-actions text-right">
-                                                    <form th:action="@{/dashboard/infoURL}" method="post">
-                                                        <button name="url" th:value="${url.direccionAcortada}" type="submit" rel="tooltip" title="estadisticas" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
+                                                    <form th:action="@{/dashboard/infoURLOtro}" method="post">
+                                                        <button name="url" th:value="${url.direccionAcortada}" type="submit" rel="tooltip" title="" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
                                                             <i class="now-ui-icons business_chart-bar-32"></i>
                                                         </button>
-                                                        <button th:formaction="@{/url/eliminar}" type="submit" name="eliminar" th:value="${url.direccionAcortada}" rel="tooltip" title="eliminar" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
+                                                        <button th:if="${usuarioActual.isAdmin() == true}" th:formaction="@{/url/eliminar-otro}" type="submit" name="eliminar" th:value="${url.direccionAcortada}" rel="tooltip" title="eliminar" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
                                                             <i class="now-ui-icons ui-1_simple-remove"></i>
                                                         </button>
                                                     </form>
-
                                                 </td>
                                             </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="row">
-
-                                    <form class="form-control" style="width:100%" th:action="@{/acortar-registrar}" method="post">
-                                        <input type="text" name="url" class="form-control" style="width: 100%" placeholder="Ingrese URL a acortar" required>
-                                        <button formmethod="post" name="acortar" type="submit" style="border-radius: 5px" class="btn btn-primary">Acortar</button>
-                                    </form>
                                 </div>
                             </div>
                         </div>

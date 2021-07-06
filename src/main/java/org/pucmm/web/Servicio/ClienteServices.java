@@ -5,7 +5,7 @@ import org.pucmm.web.Modelo.Cliente;
 public class ClienteServices {
 
     private static ClienteServices instancia;
-   private GestionDb gestionDb = new GestionDb(Cliente.class);
+    private GestionDb gestionDb = new GestionDb(Cliente.class);
 
     public static ClienteServices getInstance()
     {

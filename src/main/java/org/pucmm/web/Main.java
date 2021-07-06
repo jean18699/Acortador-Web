@@ -4,15 +4,18 @@ import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
 import org.pucmm.web.Controlador.DashboardControlador;
 import org.pucmm.web.Controlador.URLControlador;
+import org.pucmm.web.Controlador.UsuarioControlador;
 import org.pucmm.web.Servicio.BootStrapServices;
 import org.pucmm.web.Servicio.DataBaseServices;
 import org.pucmm.web.Servicio.URLServices;
+
+import java.sql.SQLException;
 
 public class Main {
 
     private static String modoConexion = "";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
         if(args.length >= 1){
             modoConexion = args[0];
@@ -28,7 +31,7 @@ public class Main {
         BootStrapServices.startDb();
 
         //Prueba de Conexión.
-        DataBaseServices.getInstancia().testConexion();
+        DataBaseServices.getInstancia().getConexion();
 
 
         Javalin app = Javalin.create(config -> {
@@ -40,6 +43,7 @@ public class Main {
         //Clases gestoras de rutas
         new DashboardControlador(app).aplicarRutas();
         new URLControlador(app).aplicarRutas();
+        new UsuarioControlador(app).aplicarRutas();
 
 
     }

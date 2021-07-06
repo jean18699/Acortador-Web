@@ -8,6 +8,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>org.pucmm.web.Modelo.URL</class>
         <class>org.pucmm.web.Modelo.Cliente</class>
+        <class>org.pucmm.web.Modelo.Usuario</class>
         <!--<class>org.pucmm.jean.Modelo.Producto</class>
         <class>org.pucmm.jean.Modelo.Producto_Comprado</class>-->
         <properties> <!--Propiedades para la conexion a la BD -->

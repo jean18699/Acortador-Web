@@ -2,6 +2,7 @@ package org.pucmm.web.Servicio;
 
 import org.pucmm.web.Modelo.Cliente;
 import org.pucmm.web.Modelo.URL;
+import org.pucmm.web.Modelo.Usuario;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -16,7 +17,7 @@ public class URLServices {
 
     private char caracteres[]; //Variable donde almacenaremos los 62 posibles caracteres de una URL
     private int longitud_url;
-    public List<URL> urlsCliente;
+    private Set<URL> urlsCliente;
 
     GestionDb gestionDb = new GestionDb(URL.class);
 
@@ -24,7 +25,7 @@ public class URLServices {
     {
         keyMap = new HashMap<String, String>();
         valueMap = new HashMap<String, String>();
-        urlsCliente = new ArrayList<>();
+        urlsCliente = new HashSet<>();
         longitud_url = 5;
 
         String alfabeto = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -139,19 +140,31 @@ public class URLServices {
 
     }
 
-    public void nuevaUrlAcortada(String url)
+    public URL nuevaUrlAcortada(String url)
     {
         URL nuevaURL = new URL();
         nuevaURL.setOrigen(url);
         nuevaURL.setDireccionAcortada(acortarURL(url));
         urlsCliente.add(nuevaURL);
         gestionDb.crear(nuevaURL);
+
+        return nuevaURL;
     }
 
-    public void eliminarURL(String urlAcortada)
+    public void eliminarURL(String userId, String urlAcortada)
     {
-        URL url = (URL) gestionDb.find(urlAcortada);
-        gestionDb.eliminar(url);
+        //URL url = (URL) gestionDb.find(urlAcortada);
+        GestionDb gestionUser = new GestionDb(Usuario.class);
+        Usuario user = (Usuario) gestionUser.find(userId);
+        for(URL url : user.getUrls())
+        {
+            if(url.getDireccionAcortada().equalsIgnoreCase(urlAcortada))
+            {
+                user.getUrls().remove(url);
+            }
+        }
+        gestionUser.editar(user);
+        gestionDb.eliminar(urlAcortada);
     }
 
     public void visitar(String urlAcortada, String navegador, String direccionIP, LocalDate fechaAcceso, LocalTime horaAcceso, String sistemaOperativo)
@@ -165,41 +178,6 @@ public class URLServices {
 
         url.getClientes().add(cliente);
 
-      /*  url.setVisitas(url.getVisitas()+1);
-
-        if(navegador.contains("Google Chrome"))
-        {
-            url.setChrome(url.getChrome() + 1);
-        }
-        else if(navegador.contains("Mozilla Firefox"))
-        {
-            url.setFirefox(url.getFirefox() + 1);
-        }
-        else if(navegador.contains("Safari"))
-        {
-            url.setSafari(url.getSafari() + 1);
-        }
-        else if(navegador.contains("Opera"))
-        {
-            url.setOpera(url.getOpera() + 1);
-        }
-        else if(navegador.contains("Microsoft Edge"))
-        {
-            url.setEdge(url.getEdge() + 1);
-        }
-        else if(navegador.contains("Internet Explorer"))
-        {
-            url.setInternetExplorer(url.getInternetExplorer() + 1);
-        }
-        else if(navegador.contains("Postman"))
-        {
-            url.setPostman(url.getPostman() + 1);
-        }
-        else{
-            url.setUnknownBrowser(url.getUnknownBrowser()+1);
-        }
-        */
-
         gestionDb.editar(url);
 
     }
@@ -210,11 +188,11 @@ public class URLServices {
     }
 
 
-    public List<URL> getUrlsCliente() {
+    public Set<URL> getUrlsCliente() {
         return urlsCliente;
     }
 
-    public void setUrlsCliente(List<URL> urlsCliente) {
+    public void setUrlsCliente(Set<URL> urlsCliente) {
         this.urlsCliente = urlsCliente;
     }
 
@@ -294,5 +272,18 @@ public class URLServices {
         return clientes;
     }
 
+    public void registrarURLUsuario(String idUser, URL url)
+    {
+        GestionDb gestionUsuario = new GestionDb(Usuario.class);
+        Usuario user = (Usuario) gestionUsuario.find(idUser);
+
+        if(gestionDb.find(url.getDireccionAcortada()) == null)
+        {
+            gestionDb.crear(url);
+        }
+
+        user.getUrls().add(url);
+        gestionDb.editar(user);
+    }
 
 }

@@ -14,10 +14,10 @@ import java.util.logging.Logger;
  */
 public class DataBaseServices {
 
-    private static org.pucmm.web.Servicio.DataBaseServices instancia;
+    private static DataBaseServices instancia;
     private String URL = "jdbc:h2:tcp://localhost/~/acortador"; //Modo Server...
-    String userHomeDir = System.getProperty("user.home");
-    File archivoBaseDeDatos = new File(userHomeDir + "/acortador.h2.db");
+    //String userHomeDir = System.getProperty("user.home");
+    //File archivoBaseDeDatos = new File(userHomeDir + "/acortador.h2.db");
     /**
      *Implementando el patron Singleton
      */
@@ -29,9 +29,9 @@ public class DataBaseServices {
      * Retornando la instancia.
      * @return
      */
-    public static org.pucmm.web.Servicio.DataBaseServices getInstancia(){
+    public static DataBaseServices getInstancia(){
         if(instancia==null){
-             instancia = new org.pucmm.web.Servicio.DataBaseServices();
+            instancia = new DataBaseServices();
         }
         return instancia;
     }
@@ -43,18 +43,20 @@ public class DataBaseServices {
         try {
             Class.forName("org.h2.Driver");
         } catch (ClassNotFoundException ex) {
-           // Logger.getLogger(TiendaService.class.getName()).log(Level.SEVERE, null, ex);
+            // Logger.getLogger(TiendaService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public Connection getConexion() {
+    public Connection getConexion() throws SQLException {
         Connection con = null;
-        try {
+
+        con = DriverManager.getConnection(URL, "sa", "");
+       /* try {
             archivoBaseDeDatos.createNewFile();
             con = DriverManager.getConnection(URL, "sa", "");
         } catch (SQLException | IOException ex) {
            // Logger.getLogger(TiendaService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
         return con;
     }
 
@@ -63,7 +65,7 @@ public class DataBaseServices {
             getConexion().close();
             System.out.println("Conexión realizado con exito...");
         } catch (SQLException ex) {
-           // Logger.getLogger(TiendaService.class.getName()).log(Level.SEVERE, null, ex);
+            // Logger.getLogger(TiendaService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
 mainClassName = "org.pucmm.web.Main"
@@ -48,5 +49,15 @@ dependencies {
 
 
     compile "com.github.romain-warnan:simple-java-bitly:1.1"
+
+    shadowJar{
+        baseName = 'app'
+        classifier = ''
+        archiveVersion = ''
+    }
+
+    task stage {
+        dependsOn shadowJar
+    }
 
 }
