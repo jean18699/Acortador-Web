@@ -36,7 +36,7 @@
             <div class="sidebar-wrapper" id="sidebar-wrapper">
                 <ul class="nav">
                     <li class="active ">
-                        <a>
+                        <a href="/dashboard">
                             <i class="now-ui-icons design_app"></i>
                             <p>Dashboard</p>
                         </a>
@@ -62,7 +62,7 @@
                                 <span class="navbar-toggler-bar bar3"></span>
                             </button>
                         </div>
-                        <a class="navbar-brand"   th:text="'Dashboard de ' + ${verUsuario}" href="/dashboard">Dashboard</a>
+                        <a class="navbar-brand"   th:text="'Dashboard de ' + ${verUsuario}">Dashboard</a>
                     </div>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -75,7 +75,7 @@
                                 <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="now-ui-icons users_single-02"></i>
                                     <p>
-                                        <span class="d-lg-none d-md-block">Some Actions</span>
+                                        <span class="d-lg-none d-md-block">Usuario</span>
                                     </p>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
@@ -96,6 +96,7 @@
                         var fechas = [];
                         var urlActual = [];
 
+
                         /*<![CDATA[*/
                         var cantidadVisitas = [(@{${visitasFechas}})];
                         /*]]>*/
@@ -104,16 +105,16 @@
                         urlActual.push("[(${url})]");
                         ///*[/]*/
 
+
                         /*[# th:each="fecha : ${fechas}"]*/
                          fechas.push("[(${fecha})]");
                         ///*[/]*/
 
                         //Funcion para cargar el historial de acceso cuando se clickee una barra en el dashboard. Asi se vera el acceso obtenido desde esa fecha
                         function graphClickEvent(event, array){
-
-                            var enlace =  window.location.href +"/"+urlActual[0]+"/estadisticas/"+fechas[array[0].index].toString()//window.location.href+"/"+urlActual[0]+"/"+fechas[array[0].index].toString()
+                            var enlace =  window.location.href +"/"+urlActual[0]+"/estadisticas/"+fechas[array[0].index].toString()
+                            console.log(enlace)
                             window.location.replace(enlace)
-
                         }
 
 
@@ -213,7 +214,7 @@
                     <div class="col-md-7">
                         <div class="card card-chart">
                             <div class="card-header">
-                                <h5 class="card-category">Seleccione una fecha para ver el historial</h5>
+                                <h5 th:text="${urlActual}" class="card-category">Seleccione una fecha para ver el historial</h5>
                                 <h4 th:text="@{'Historial de Acceso '}"  class="card-title">Informacion de Acceso</h4>
                             </div>
                             <div class="card-body">
@@ -263,7 +264,7 @@
                                                 </td>
                                                 <td th:text="${url.getOrigen()}" class="text-left"></td>
                                                 <td class="td-actions text-right">
-                                                    <form th:action="@{/dashboard/infoURLUsuario}" method="post">
+                                                    <form th:action="@{/dashboard/infoURLOtro}" method="post">
                                                         <button name="url" th:value="${url.direccionAcortada}" type="submit" rel="tooltip" title="" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
                                                             <i class="now-ui-icons business_chart-bar-32"></i>
                                                         </button>
