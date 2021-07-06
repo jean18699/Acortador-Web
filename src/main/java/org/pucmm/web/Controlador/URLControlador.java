@@ -67,13 +67,8 @@ public class URLControlador {
                 ctx.redirect("/usuario/iniciarSesion");
             }else {
                 URLServices.getInstance().eliminarURL(ctx.sessionAttribute("vistaUsuario"), ctx.formParam("eliminar"));
-                ctx.redirect("/dashboard/" + ctx.cookie("verUsuario"));
+                ctx.redirect("/dashboard");
             }
-        });
-
-        app.post("/url/eliminar-otro", ctx -> {
-            URLServices.getInstance().eliminarURL(ctx.sessionAttribute("vistaUsuario"), ctx.formParam("eliminar"));
-            ctx.redirect("/dashboard");
         });
 
 

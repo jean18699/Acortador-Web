@@ -69,7 +69,6 @@ public class DashboardControlador {
                     ctx.result("El usuario no existe");
                 }else
                 {
-                    ctx.sessionAttribute("vistaUsuario",ctx.formParam("verUsuario"));
                     modeloVistaUsuario.put("urlActual", ctx.formParam("url"));
                     modeloVistaUsuario.put("clientes",null);
                     modeloVistaUsuario.put("visitasFechas","");
@@ -215,6 +214,13 @@ public class DashboardControlador {
                 ));
                 ctx.redirect("/dashboard/infoURLOtro");
             }
+        });
+
+        //Eliminacion de URLs de otros usuarios
+        app.post("/url/eliminar-otro", ctx -> {
+            URLServices.getInstance().eliminarURL(modeloVistaUsuario.get("verUsuario").toString(), ctx.formParam("eliminar"));
+            modeloVistaUsuario.put("urls", UsuarioServices.getInstancia().getURLsByUsuario(modeloVistaUsuario.get("verUsuario").toString()));
+            ctx.redirect("/dashboard/infoURLOtro");
         });
 
     }
