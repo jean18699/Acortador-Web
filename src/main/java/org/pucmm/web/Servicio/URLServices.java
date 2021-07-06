@@ -151,6 +151,18 @@ public class URLServices {
         return nuevaURL;
     }
 
+    public String crearRetornarUrlAcortada(String url)
+    {
+        URL nuevaURL = new URL();
+        nuevaURL.setOrigen(url);
+        nuevaURL.setDireccionAcortada(acortarURL(url));
+        urlsCliente.add(nuevaURL);
+        gestionDb.crear(nuevaURL);
+
+        return nuevaURL.getDireccionAcortada();
+    }
+
+
     public void eliminarURL(String userId, String urlAcortada)
     {
         //URL url = (URL) gestionDb.find(urlAcortada);

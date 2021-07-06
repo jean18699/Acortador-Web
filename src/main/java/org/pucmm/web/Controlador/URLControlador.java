@@ -3,11 +3,17 @@ package org.pucmm.web.Controlador;
 import io.javalin.Javalin;
 import io.javalin.plugin.rendering.JavalinRenderer;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
+import org.eclipse.jetty.server.session.Session;
+import org.jsoup.Connection;
+import org.jsoup.nodes.Document;
 import org.pucmm.web.Modelo.URL;
 import org.pucmm.web.Servicio.URLServices;
 import org.pucmm.web.Servicio.UsuarioServices;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -39,14 +45,9 @@ public class URLControlador {
 
 
         app.post("/acortar", ctx -> {
-            URLServices.getInstance().nuevaUrlAcortada(ctx.formParam("url"));
-            for(URL urlCliente : URLServices.getInstance().getUrlsCliente())
-            {
-                Cookie cookie_url = new Cookie(urlCliente.getDireccionAcortada(),urlCliente.getOrigen());
-                cookie_url.setMaxAge(157680);
-                ctx.res.addCookie(cookie_url);
-
-            }
+            Cookie cookie_url = new Cookie(URLServices.getInstance().crearRetornarUrlAcortada(ctx.formParam("url")),ctx.formParam("url"));
+            cookie_url.setMaxAge(3600*24*30*6); //6 meses
+            ctx.res.addCookie(cookie_url);
             ctx.redirect("/");
         });
 
@@ -93,6 +94,7 @@ public class URLControlador {
             String os = System.getProperty("os.name");
 
             //Para obtener la direccion IP
+
             URLServices.getInstance().visitar(ctx.pathParam("url"),nombreCliente,ctx.req.getRemoteAddr(),fechaAcceso, horaAcceso, os);
             /*InetAddress ip;
             try
