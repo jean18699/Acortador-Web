@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class DataBaseServices {
 
     private static DataBaseServices instancia;
-    private String URL = "jdbc:h2:tcp://54.82.240.37/~/Acortador"; //Modo Server...
+    private String URL = "jdbc:h2:tcp://localhost/~/Acortador"; //Modo Server...
     /**
      *Implementando el patron Singleton
      */
