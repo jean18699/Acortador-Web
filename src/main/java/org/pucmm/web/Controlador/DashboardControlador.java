@@ -15,6 +15,7 @@ public class DashboardControlador {
 
     private Javalin app;
     Map<String, Object> modelo = new HashMap<>();
+    Map<String, Object> modeloVistaUsuario = new HashMap<>();
     private String dominio = "http://localhost:7000/";
     Set<LocalDate> fechas;
     List<Long> visitasFechas;
@@ -56,7 +57,7 @@ public class DashboardControlador {
             }
         });
 
-        app.post("/dashboard/infoUsuario", ctx -> {
+        app.post("/dashboard/infoOtro", ctx -> {
 
             if(ctx.sessionAttribute("usuario") == null)
             {
@@ -69,16 +70,20 @@ public class DashboardControlador {
                 }else
                 {
                     ctx.sessionAttribute("vistaUsuario",ctx.formParam("verUsuario"));
-                    modelo.put("verUsuario", ctx.sessionAttribute("vistaUsuario"));
-                    modelo.put("usuarioActual", UsuarioServices.getInstancia().getUsuario(ctx.sessionAttribute("usuario")));
-                    modelo.put("urls", UsuarioServices.getInstancia().getURLsByUsuario(ctx.sessionAttribute("vistaUsuario")));
-                    ctx.render("/vistas/templates/dashboardOtro.html",modelo);
+                    modeloVistaUsuario.put("clientes",null);
+                    modeloVistaUsuario.put("visitasFechas","");
+                    modeloVistaUsuario.put("visitasFechas","");
+                    modeloVistaUsuario.put("verUsuario", ctx.formParam("verUsuario"));
+                    modeloVistaUsuario.put("usuarioActual", UsuarioServices.getInstancia().getUsuario(ctx.sessionAttribute("usuario")));
+                    modeloVistaUsuario.put("urls", UsuarioServices.getInstancia().getURLsByUsuario(ctx.formParam("verUsuario")));
+                    modeloVistaUsuario.put("dominio", dominio);
+                    ctx.render("/vistas/templates/dashboardOtro.html",modeloVistaUsuario);
                 }
 
             }
         });
 
-        app.post("/dashboard/infoURLUsuario",ctx -> {
+        app.post("/dashboard/infoURLOtro",ctx -> {
 
             URL url = URLServices.getInstance().getURL(ctx.formParam("url"));
             fechas = new HashSet<>();
@@ -95,13 +100,13 @@ public class DashboardControlador {
                 visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
             }
 
-            modelo.put("urlActual", ctx.formParam("url"));
+            modeloVistaUsuario.put("urlActual", ctx.formParam("url"));
             // modelo.put("dominio", dominio);
-            modelo.put("fechaAcceso", "");
-            modelo.put("fechas",fechas);
-            modelo.put("visitasFechas",visitasFechas);
+            modeloVistaUsuario.put("fechaAcceso", "");
+            modeloVistaUsuario.put("fechas",fechas);
+            modeloVistaUsuario.put("visitasFechas",visitasFechas);
             //  modelo.put("urls", URLServices.getInstance().getURLs());
-            ctx.render("/vistas/templates/dashboardOtro.html",modelo);
+            ctx.render("/vistas/templates/dashboardOtro.html",modeloVistaUsuario);
         });
 
 
