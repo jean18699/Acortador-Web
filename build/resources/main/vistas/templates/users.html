@@ -15,7 +15,7 @@
 
 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="utf-8" />
@@ -53,13 +53,13 @@
       <div class="sidebar-wrapper" id="sidebar-wrapper">
         <ul class="nav">
           <li>
-            <a href="dashboard.html">
+            <a href="/dashboard">
               <i class="now-ui-icons design_app"></i>
               <p>Dashboard</p>
             </a>
           </li>
           <li class="active ">
-            <a href="user.html">
+            <a href="/dashboard/usuarios">
               <i class="now-ui-icons users_single-02"></i>
               <p>Usuarios</p>
             </a>
@@ -79,7 +79,7 @@
                 <span class="navbar-toggler-bar bar3"></span>
               </button>
             </div>
-            <a class="navbar-brand" href="#pablo">Usuarios</a>
+            <a class="navbar-brand" href="/dashboard/usuarios">Usuarios</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -87,45 +87,17 @@
             <span class="navbar-toggler-bar navbar-kebab"></span>
           </button>
           <div class="collapse navbar-collapse justify-content-end" id="navigation">
-            <form>
-              <div class="input-group no-border">
-                <input type="text" value="" class="form-control" placeholder="Search...">
-                <div class="input-group-append">
-                  <div class="input-group-text">
-                    <i class="now-ui-icons ui-1_zoom-bold"></i>
-                  </div>
-                </div>
-              </div>
-            </form>
             <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" href="#pablo">
-                  <i class="now-ui-icons media-2_sound-wave"></i>
-                  <p>
-                    <span class="d-lg-none d-md-block">Stats</span>
-                  </p>
-                </a>
-              </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="now-ui-icons location_world"></i>
+                  <i class="now-ui-icons users_single-02"></i>
                   <p>
                     <span class="d-lg-none d-md-block">Some Actions</span>
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="#">Action</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <a class="dropdown-item" href="#">Something else here</a>
+                  <a class="dropdown-item" href="/usuario/cerrarSesion">Cerrar Sesion</a>
                 </div>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#pablo">
-                  <i class="now-ui-icons users_single-02"></i>
-                  <p>
-                    <span class="d-lg-none d-md-block">Account</span>
-                  </p>
-                </a>
               </li>
             </ul>
           </div>
@@ -141,18 +113,18 @@
                 <h5 class="title">Editar Usuario</h5>
               </div>
               <div class="card-body">
-                <form>
+                <form th:action="@{/usuario/editar}" method="post">
                   <div class="row">
                     <div class="col-md-6 pr-1">
                       <div class="form-group">
                         <label>Usuario</label>
-                        <input type="text" class="form-control" disabled="" value="">
+                        <input type="text" name="usuario" th:placeholder="${selected.getNombreUsuario()}" th:value="${selected.getNombreUsuario()}" class="form-control" readonly>
                       </div>
                     </div>
                     <div class="col-md-6 px-1">
                       <div class="form-group">
                         <label>Nombre</label>
-                        <input type="text" class="form-control" value="">
+                        <input type="text" name="nombre" th:placeholder="${selected.getNombre()}" th:value="${selected.getNombre()}" class="form-control">
                       </div>
                     </div>
                   </div>
@@ -160,27 +132,21 @@
                     <div class="col-md-6 pr-1">
                       <div class="form-group">
                         <label>Password</label>
-                        <input type="text" class="form-control" value="">
-                      </div>
-                    </div>
-                    <div class="col-md-6 px-1">
-                      <div class="form-group">
-                        <label>Confirmar Password</label>
-                        <input type="text" class="form-control" value="">
+                        <input type="password" name="password" class="form-control" th:placeholder="${selected.getPassword()}" th:value="${selected.getPassword()}"  >
                       </div>
                     </div>
                   </div>
-                  <div class="form-group">
+                  <div th:if="${usuarioActual == 'admin' and selected.getNombreUsuario() != 'admin'}" class="form-group">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input class="form-check-input" type="checkbox"> Administrador
+                        <input name="admin" th:checked="${selected.isAdmin()}" th:value="${selected.isAdmin()}" class="form-check-input" type="checkbox"> Administrador
                         <span class="form-check-sign">
                           <span class="check"></span>
                         </span>
                       </label>
                     </div>
                   </div>
-                  <div>
+                  <div th:if="${selected.getNombreUsuario()} != ''">
                     <button type="submit" class="btn btn-primary">Guardar</button>
                   </div>
                 </form>
@@ -190,7 +156,10 @@
         <div class="card">
           <div class="card-header">
             <h5 class="title">Lista de Usuarios</h5>
-            <button type="submit" class="btn btn-primary">Crear Usuario</button>
+            <form th:action="@{/usuario/crear}" method="get">
+              <button type="submit" class="btn btn-primary">Crear Usuario</button>
+            </form>
+
           </div>
           <div class="table-responsive card-body">
             <table class="table text-nowrap mb-0">
@@ -198,11 +167,35 @@
                 <tr>
                   <th>Usuario</th>
                   <th>Nombre</th>
-                  <th>Administrador</th>
                   <th>Accion</th>
                   <th></th>
                 </tr>
               </thead>
+              <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                  <td th:text="${usuario.nombreUsuario}">admin</td>
+                  <td th:text="${usuario.nombre}">nombre</td>
+                  <td class="td-actions">
+                    <form th:action="@{/usuario/verUsuario}" method="post">
+                      <button th:formaction="@{/dashboard/infoUsuario}" name="verUsuario" th:value="${usuario.nombreUsuario}" type="submit" rel="tooltip" title="dashboard" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
+                        <i class="now-ui-icons business_chart-bar-32"></i>
+                      </button>
+                      <!--Solo el admin original puede editar y eliminar a los usuarios que son admins. Luego de eso los usuarios que se vuelven admins solo pueden editar y eliminar a los que no lo son" -->
+                      <button th:if="${usuarioActual == 'admin'}" formmethod="post" name="usuarioLista" th:value="${usuario.nombreUsuario}" type="submit" rel="tooltip" title="editar" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
+                        <i class="now-ui-icons design-2_ruler-pencil"></i>
+                      </button>
+                      <button th:if="${usuarioActual != 'admin' and usuario.isAdmin() == false}" formmethod="post" name="usuarioLista" th:value="${usuario.nombreUsuario}" type="submit" rel="tooltip" title="editar" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
+                        <i class="now-ui-icons design-2_ruler-pencil"></i>
+                      </button>
+                      <button th:if="${usuarioActual == 'admin' and usuario.nombreUsuario != 'admin'}" type="submit" name="eliminar" th:value="${usuario.nombreUsuario}" th:formaction="@{/usuario/eliminar}" rel="tooltip" title="eliminar" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
+                        <i class="now-ui-icons ui-1_simple-remove"></i> </button>
+                      <button th:if="${usuarioActual != 'admin' and usuario.isAdmin() == false}" type="submit" name="eliminar" th:value="${usuario.nombreUsuario}" th:formaction="@{/usuario/eliminar}" rel="tooltip" title="eliminar" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
+                        <i class="now-ui-icons ui-1_simple-remove"></i> </button>
+                    </form>
+                  </td>
+
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>

@@ -151,10 +151,20 @@ public class URLServices {
         return nuevaURL;
     }
 
-    public void eliminarURL(String urlAcortada)
+    public void eliminarURL(String userId, String urlAcortada)
     {
-        URL url = (URL) gestionDb.find(urlAcortada);
-        gestionDb.eliminar(url);
+        //URL url = (URL) gestionDb.find(urlAcortada);
+        GestionDb gestionUser = new GestionDb(Usuario.class);
+        Usuario user = (Usuario) gestionUser.find(userId);
+        for(URL url : user.getUrls())
+        {
+            if(url.getDireccionAcortada().equalsIgnoreCase(urlAcortada))
+            {
+                user.getUrls().remove(url);
+            }
+        }
+        gestionUser.editar(user);
+        gestionDb.eliminar(urlAcortada);
     }
 
     public void visitar(String urlAcortada, String navegador, String direccionIP, LocalDate fechaAcceso, LocalTime horaAcceso, String sistemaOperativo)
@@ -167,41 +177,6 @@ public class URLServices {
         gestionDbCliente.crear(cliente);
 
         url.getClientes().add(cliente);
-
-      /*  url.setVisitas(url.getVisitas()+1);
-
-        if(navegador.contains("Google Chrome"))
-        {
-            url.setChrome(url.getChrome() + 1);
-        }
-        else if(navegador.contains("Mozilla Firefox"))
-        {
-            url.setFirefox(url.getFirefox() + 1);
-        }
-        else if(navegador.contains("Safari"))
-        {
-            url.setSafari(url.getSafari() + 1);
-        }
-        else if(navegador.contains("Opera"))
-        {
-            url.setOpera(url.getOpera() + 1);
-        }
-        else if(navegador.contains("Microsoft Edge"))
-        {
-            url.setEdge(url.getEdge() + 1);
-        }
-        else if(navegador.contains("Internet Explorer"))
-        {
-            url.setInternetExplorer(url.getInternetExplorer() + 1);
-        }
-        else if(navegador.contains("Postman"))
-        {
-            url.setPostman(url.getPostman() + 1);
-        }
-        else{
-            url.setUnknownBrowser(url.getUnknownBrowser()+1);
-        }
-        */
 
         gestionDb.editar(url);
 

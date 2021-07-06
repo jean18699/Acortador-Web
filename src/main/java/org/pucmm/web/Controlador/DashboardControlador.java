@@ -8,10 +8,7 @@ import org.pucmm.web.Modelo.URL;
 import org.pucmm.web.Servicio.URLServices;
 import org.pucmm.web.Servicio.UsuarioServices;
 
-import javax.servlet.http.Cookie;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 public class DashboardControlador {
@@ -27,8 +24,6 @@ public class DashboardControlador {
         this.app = app;
         JavalinRenderer.register(JavalinThymeleaf.INSTANCE, ".html");
         modelo.put("dominio", dominio);
-
-
     }
 
 
@@ -52,23 +47,63 @@ public class DashboardControlador {
                     }
                 }
 
-
-                /*if(URLServices.getInstance().getUrlsCliente().size() > 0)
-                {
-                    for(URL url_ : URLServices.getInstance().getUrlsCliente())
-                    {
-                        URL url = URLServices.getInstance().getURL(url_.getDireccionAcortada());
-                        URLServices.getInstance().registrarURLUsuario(ctx.sessionAttribute("usuario"),url);
-                    }
-                }*/
-
                 modelo.put("clientes",null);
                 modelo.put("visitasFechas","");
                 modelo.put("visitasFechas","");
+                modelo.put("usuarioActual", UsuarioServices.getInstancia().getUsuario(ctx.sessionAttribute("usuario")));
                 modelo.put("urls", UsuarioServices.getInstancia().getURLsByUsuario(ctx.sessionAttribute("usuario")));
                 ctx.render("/vistas/templates/dashboard.html",modelo);
             }
         });
+
+        app.post("/dashboard/infoUsuario", ctx -> {
+
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else
+            {
+                if(UsuarioServices.getInstancia().getUsuario(ctx.formParam("verUsuario")) == null)
+                {
+                    ctx.result("El usuario no existe");
+                }else
+                {
+                    ctx.sessionAttribute("vistaUsuario",ctx.formParam("verUsuario"));
+                    modelo.put("verUsuario", ctx.sessionAttribute("vistaUsuario"));
+                    modelo.put("usuarioActual", UsuarioServices.getInstancia().getUsuario(ctx.sessionAttribute("usuario")));
+                    modelo.put("urls", UsuarioServices.getInstancia().getURLsByUsuario(ctx.sessionAttribute("vistaUsuario")));
+                    ctx.render("/vistas/templates/dashboardOtro.html",modelo);
+                }
+
+            }
+        });
+
+        app.post("/dashboard/infoURLUsuario",ctx -> {
+
+            URL url = URLServices.getInstance().getURL(ctx.formParam("url"));
+            fechas = new HashSet<>();
+            visitasFechas = new ArrayList<>();
+
+            for(Cliente cliente : url.getClientes())
+            {
+                LocalDate date = cliente.getFechaAcceso();
+                fechas.add(date);
+            }
+
+            for(LocalDate fecha : fechas)
+            {
+                visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
+            }
+
+            modelo.put("urlActual", ctx.formParam("url"));
+            // modelo.put("dominio", dominio);
+            modelo.put("fechaAcceso", "");
+            modelo.put("fechas",fechas);
+            modelo.put("visitasFechas",visitasFechas);
+            //  modelo.put("urls", URLServices.getInstance().getURLs());
+            ctx.render("/vistas/templates/dashboardOtro.html",modelo);
+        });
+
 
         app.get("/dashboard/infoURL", ctx -> {
 
@@ -110,7 +145,7 @@ public class DashboardControlador {
 
             for(Cliente cliente : url.getClientes())
             {
-                LocalDate date = cliente.getFechaAcceso();//Date.from(cliente.getFechaAcceso().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                LocalDate date = cliente.getFechaAcceso();
                 fechas.add(date);
             }
 
@@ -129,9 +164,7 @@ public class DashboardControlador {
             ctx.redirect("/dashboard/infoURL");
         });
 
-        app.get("/dashboard/usuarios", ctx -> {
-            ctx.result("vista usuarios");
-        });
+
 
     }
 }

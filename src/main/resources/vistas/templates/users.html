@@ -15,7 +15,7 @@
 
 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="utf-8" />
@@ -23,7 +23,7 @@
   <link rel="icon" type="image/png" href="../assets/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <title>
-    Crear Usuario
+    Usuarios
   </title>
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
@@ -110,21 +110,21 @@
         <div class="flex center">
             <div class="card">
               <div class="card-header">
-                <h5 class="title">Crear Usuario</h5>
+                <h5 class="title">Editar Usuario</h5>
               </div>
               <div class="card-body">
-                <form action="/usuario/registrarse-dashboard" method="post">
+                <form th:action="@{/usuario/editar}" method="post">
                   <div class="row">
                     <div class="col-md-6 pr-1">
                       <div class="form-group">
                         <label>Usuario</label>
-                        <input type="text" class="form-control" name="usuario">
+                        <input type="text" name="usuario" th:placeholder="${selected.getNombreUsuario()}" th:value="${selected.getNombreUsuario()}" class="form-control" readonly>
                       </div>
                     </div>
                     <div class="col-md-6 px-1">
                       <div class="form-group">
                         <label>Nombre</label>
-                        <input type="text" class="form-control" name="nombre">
+                        <input type="text" name="nombre" th:placeholder="${selected.getNombre()}" th:value="${selected.getNombre()}" class="form-control">
                       </div>
                     </div>
                   </div>
@@ -132,26 +132,72 @@
                     <div class="col-md-6 pr-1">
                       <div class="form-group">
                         <label>Password</label>
-                        <input type="text" class="form-control" name="password">
+                        <input type="password" name="password" class="form-control" th:placeholder="${selected.getPassword()}" th:value="${selected.getPassword()}"  >
                       </div>
                     </div>
                   </div>
-                  <div class="form-group">
+                  <div th:if="${usuarioActual == 'admin' and selected.getNombreUsuario() != 'admin'}" class="form-group">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input class="form-check-input" type="checkbox" name="admin"> Administrador
+                        <input name="admin" th:checked="${selected.isAdmin()}" th:value="${selected.isAdmin()}" class="form-check-input" type="checkbox"> Administrador
                         <span class="form-check-sign">
                           <span class="check"></span>
                         </span>
                       </label>
                     </div>
                   </div>
-                  <div>
+                  <div th:if="${selected.getNombreUsuario()} != ''">
                     <button type="submit" class="btn btn-primary">Guardar</button>
                   </div>
                 </form>
               </div>
             </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h5 class="title">Lista de Usuarios</h5>
+            <form th:action="@{/usuario/crear}" method="get">
+              <button type="submit" class="btn btn-primary">Crear Usuario</button>
+            </form>
+
+          </div>
+          <div class="table-responsive card-body">
+            <table class="table text-nowrap mb-0">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Nombre</th>
+                  <th>Accion</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                  <td th:text="${usuario.nombreUsuario}">admin</td>
+                  <td th:text="${usuario.nombre}">nombre</td>
+                  <td class="td-actions">
+                    <form th:action="@{/usuario/verUsuario}" method="post">
+                      <button th:formaction="@{/dashboard/infoUsuario}" name="verUsuario" th:value="${usuario.nombreUsuario}" type="submit" rel="tooltip" title="dashboard" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
+                        <i class="now-ui-icons business_chart-bar-32"></i>
+                      </button>
+                      <!--Solo el admin original puede editar y eliminar a los usuarios que son admins. Luego de eso los usuarios que se vuelven admins solo pueden editar y eliminar a los que no lo son" -->
+                      <button th:if="${usuarioActual == 'admin'}" formmethod="post" name="usuarioLista" th:value="${usuario.nombreUsuario}" type="submit" rel="tooltip" title="editar" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
+                        <i class="now-ui-icons design-2_ruler-pencil"></i>
+                      </button>
+                      <button th:if="${usuarioActual != 'admin' and usuario.isAdmin() == false}" formmethod="post" name="usuarioLista" th:value="${usuario.nombreUsuario}" type="submit" rel="tooltip" title="editar" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
+                        <i class="now-ui-icons design-2_ruler-pencil"></i>
+                      </button>
+                      <button th:if="${usuarioActual == 'admin' and usuario.nombreUsuario != 'admin'}" type="submit" name="eliminar" th:value="${usuario.nombreUsuario}" th:formaction="@{/usuario/eliminar}" rel="tooltip" title="eliminar" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
+                        <i class="now-ui-icons ui-1_simple-remove"></i> </button>
+                      <button th:if="${usuarioActual != 'admin' and usuario.isAdmin() == false}" type="submit" name="eliminar" th:value="${usuario.nombreUsuario}" th:formaction="@{/usuario/eliminar}" rel="tooltip" title="eliminar" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
+                        <i class="now-ui-icons ui-1_simple-remove"></i> </button>
+                    </form>
+                  </td>
+
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

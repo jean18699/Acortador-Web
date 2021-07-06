@@ -17,7 +17,7 @@ public class UsuarioServices {
         //Creando el admin
         if(gestionDb.find("admin")== null)
         {
-            Usuario admin = new Usuario("admin","admin","Administrador");
+            Usuario admin = new Usuario("admin","admin","Administrador",true);
             gestionDb.crear(admin);
         }
 
@@ -49,7 +49,7 @@ public class UsuarioServices {
         return (Usuario) gestionDb.find(idUser);
     }
 
-    public List<Usuario> getAllUsuarios(Usuario user)
+    public List<Usuario> getAllUsuarios()
     {
         return gestionDb.findAll();
     }
@@ -57,6 +57,36 @@ public class UsuarioServices {
     public Set<URL> getURLsByUsuario(String idUser)
     {
         return ((Usuario) gestionDb.find(idUser)).getUrls();
+    }
+
+    public void asignarAdmin(String nombreUsuario)
+    {
+        Usuario user = (Usuario) gestionDb.find(nombreUsuario);
+        if(user.isAdmin())
+        {
+            user.setAdmin(false);
+        }else
+        {
+            user.setAdmin(true);
+        }
+
+        gestionDb.editar(user);
+    }
+
+    public Usuario editarUsuario(String idUser, String nombre, String password, boolean admin)
+    {
+        Usuario user = (Usuario) gestionDb.find(idUser);
+        user.setAdmin(admin);
+        user.setNombre(nombre);
+        user.setPassword(password);
+        gestionDb.editar(user);
+
+        return user;
+    }
+
+    public void eliminarUsuario(String idUser)
+    {
+        gestionDb.eliminar(idUser);
     }
 
 }

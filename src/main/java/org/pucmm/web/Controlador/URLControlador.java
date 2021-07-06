@@ -53,13 +53,21 @@ public class URLControlador {
         });
 
         app.post("/acortar-registrar", ctx -> {
-
-
-            URLServices.getInstance().registrarURLUsuario(ctx.sessionAttribute("usuario"),
-                    URLServices.getInstance().nuevaUrlAcortada(ctx.formParam("url")));
-
+            URLServices.getInstance().registrarURLUsuario(ctx.sessionAttribute("usuario"), URLServices.getInstance().nuevaUrlAcortada(ctx.formParam("url")));
+            URLServices.getInstance().getUrlsCliente().clear();
             ctx.redirect("/dashboard");
         });
+
+        app.post("/url/eliminar", ctx -> {
+            URLServices.getInstance().eliminarURL(ctx.sessionAttribute("vistaUsuario"), ctx.formParam("eliminar"));
+            ctx.redirect("/dashboard/"+ctx.cookie("verUsuario"));
+        });
+
+        app.post("/url/eliminar-otro", ctx -> {
+            URLServices.getInstance().eliminarURL(ctx.sessionAttribute("vistaUsuario"), ctx.formParam("eliminar"));
+            ctx.redirect("/dashboard");
+        });
+
 
         app.get("/:url",ctx -> {
             if(!ctx.pathParam("url").equalsIgnoreCase("favicon.ico"))
