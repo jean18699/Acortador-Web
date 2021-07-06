@@ -4,8 +4,6 @@ import io.javalin.Javalin;
 import io.javalin.plugin.rendering.JavalinRenderer;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
 import org.eclipse.jetty.server.session.Session;
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
 import org.pucmm.web.Modelo.URL;
 import org.pucmm.web.Servicio.URLServices;
 import org.pucmm.web.Servicio.UsuarioServices;
