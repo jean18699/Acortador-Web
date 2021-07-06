@@ -9,6 +9,7 @@ import javax.servlet.http.Cookie;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +63,7 @@ public class URLControlador {
             String[] DatosCliente = InfoNavegador[1].split(";");
             String nombreCliente = DatosCliente[0];
             LocalDate fechaAcceso = LocalDate.now();
+            LocalTime horaAcceso = LocalTime.now();
 
             //Sistema operativo
             String os = System.getProperty("os.name");
@@ -71,7 +73,7 @@ public class URLControlador {
             try
             {
                 ip = InetAddress.getLocalHost();
-                URLServices.getInstance().visitar(ctx.pathParam("url"),nombreCliente,ip.getHostAddress(),fechaAcceso,os);
+                URLServices.getInstance().visitar(ctx.pathParam("url"),nombreCliente,ip.getHostAddress(),fechaAcceso, horaAcceso, os);
             }catch (UnknownHostException e) {
                 e.printStackTrace();
             }

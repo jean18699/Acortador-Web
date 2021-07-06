@@ -3,15 +3,10 @@ package org.pucmm.web.Servicio;
 import org.pucmm.web.Modelo.Cliente;
 import org.pucmm.web.Modelo.URL;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
-
-import static io.javalin.Javalin.log;
 
 public class URLServices {
 
@@ -159,11 +154,11 @@ public class URLServices {
         gestionDb.eliminar(url);
     }
 
-    public void visitar(String urlAcortada, String navegador, String direccionIP, LocalDate fechaAcceso, String sistemaOperativo)
+    public void visitar(String urlAcortada, String navegador, String direccionIP, LocalDate fechaAcceso, LocalTime horaAcceso, String sistemaOperativo)
     {
 
         URL url = (URL) gestionDb.find(urlAcortada);
-        Cliente cliente = new Cliente(navegador,direccionIP,fechaAcceso,sistemaOperativo);
+        Cliente cliente = new Cliente(navegador,direccionIP,fechaAcceso, horaAcceso, sistemaOperativo);
 
         GestionDb gestionDbCliente = new GestionDb(Cliente.class);
         gestionDbCliente.crear(cliente);
@@ -250,6 +245,20 @@ public class URLServices {
         return contador;
     }
 
+    public ArrayList<LocalTime> getHorasFecha(String urlAcortada, String fecha)
+    {
+        URL url = (URL) gestionDb.find(urlAcortada);
+        ArrayList<LocalTime> horas = new ArrayList<>();
+        for(Cliente cliente : url.getClientes())
+        {
+            if(cliente.getFechaAcceso().toString().equalsIgnoreCase(fecha))
+            {
+                horas.add(cliente.getHoraAcceso());
+            }
+        }
+        return horas;
+    }
+
     public long getCantidadVisitasNavegador(String urlAcortada, String navegador)
     {
         URL url = (URL) gestionDb.find(urlAcortada);
@@ -269,5 +278,21 @@ public class URLServices {
         URL url = (URL) gestionDb.find(urlAcortada);
         return url;
     }
+
+    public Set<Cliente> getClientesURLByFecha(String urlAcortada, String fecha)
+    {
+        URL url = (URL) gestionDb.find(urlAcortada);
+        Set<Cliente> clientes = new HashSet<>();
+
+        for(Cliente cliente : url.getClientes())
+        {
+            if(cliente.getFechaAcceso().toString().equals(fecha))
+            {
+                clientes.add(cliente);
+            }
+        }
+        return clientes;
+    }
+
 
 }

@@ -33,6 +33,8 @@ public class DashboardControlador {
 
         app.get("/dashboard", ctx -> {
 
+            modelo.put("visitasFechas","");
+            modelo.put("fechas","");
             modelo.put("urls", URLServices.getInstance().getURLs());
             ctx.render("/vistas/templates/dashboard.html",modelo);
         });
@@ -44,9 +46,6 @@ public class DashboardControlador {
             Set<LocalDate> fechas = new HashSet<>();
             List<Long> visitasFechas = new ArrayList<>();
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-
             for(Cliente cliente : url.getClientes())
             {
                LocalDate date = cliente.getFechaAcceso();//Date.from(cliente.getFechaAcceso().atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -55,18 +54,26 @@ public class DashboardControlador {
 
             for(LocalDate fecha : fechas)
             {
-                System.out.println(fecha.toString());
                 visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
             }
-            System.out.println(fechas);
-            System.out.println(visitasFechas);
 
+
+            modelo.put("fechaAcceso", "");
             modelo.put("fechas",fechas);
             modelo.put("visitasFechas",visitasFechas);
             modelo.put("urls", URLServices.getInstance().getURLs());
             ctx.render("/vistas/templates/dashboard.html",modelo);
         });
 
+        app.get("/dashboard/:url/:fecha",ctx->{
+            modelo.put("fechaAcceso", ctx.pathParam("fecha"));
+            modelo.put("clientes",URLServices.getInstance().getClientesURLByFecha(
+                    ctx.pathParam("url"), ctx.pathParam("fecha")
+            ));
+            ctx.redirect("/dashboard/"+ctx.pathParam("url"));
+        });
+
+        
 
         app.get("/dashboard/usuarios", ctx -> {
             ctx.result("vista usuarios");

@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 public class Cliente {
@@ -16,13 +17,16 @@ public class Cliente {
     private String navegador;
     private String ip;
     private LocalDate fechaAcceso;
+    private LocalTime horaAcceso;
     private String sistemaOperativo;
 
-    public Cliente(String navegador, String ip, LocalDate fechaAcceso, String sistemaOperativo)
+
+    public Cliente(String navegador, String ip, LocalDate fechaAcceso, LocalTime horaAcceso, String sistemaOperativo)
     {
         this.ip = ip;
         this.navegador = navegador;
         this.fechaAcceso = fechaAcceso;
+        this.horaAcceso = horaAcceso;
         this.sistemaOperativo = sistemaOperativo;
     }
 
@@ -67,5 +71,13 @@ public class Cliente {
 
     public void setSistemaOperativo(String sistemaOperativo) {
         this.sistemaOperativo = sistemaOperativo;
+    }
+
+    public LocalTime getHoraAcceso() {
+        return horaAcceso;
+    }
+
+    public void setHoraAcceso(LocalTime horaAcceso) {
+        this.horaAcceso = horaAcceso;
     }
 }

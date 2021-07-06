@@ -17,6 +17,7 @@
     <link href="../assets/css/now-ui-dashboard.css?v=1.5.0" rel="stylesheet" />
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link href="../assets/demo/demo.css" rel="stylesheet" />
+    <link href="../assets/css/tablas.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -131,6 +132,12 @@
                          fechas.push("[(${fecha})]");
                         ///*[/]*/
 
+                        //Funcion para cargar el historial de acceso cuando se clickee una barra en el dashboard. Asi se vera el acceso obtenido desde esa fecha
+                        function graphClickEvent(event, array){
+                            window.location = window.location.href+"/"+fechas[array[0].index]
+                        }
+
+
                         var ctx = document.getElementById('myChart').getContext('2d');
                         var myChart = new Chart(ctx, {
                             type:'bar',
@@ -161,6 +168,7 @@
                                 ]
                             },
                             options: {
+                                onClick: graphClickEvent,
                                 layout: {
                                     padding: {
                                         left: 20,
@@ -221,9 +229,57 @@
                     </script>
                 </canvas>
             </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-6">&nbsp;</div>
+                    <div class="col-md-6">
+                        <div class="card card-chart">
+                            <div class="card-header">
+                                <h5 class="card-category">Seleccione una fecha</h5>
+                                <h4 th:text="@{'Historial de Acceso '}"  class="card-title">Informacion de Acceso</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                                    <div class="table-responsive">
+                                    <table style="font-size: 13px" class="table">
+                                        <thead class=" text-primary">
+                                        <th>IP</th>
+                                        <th>Fecha Acceso</th>
+                                        <th>HoraAcceso</th>
+                                        <th>Navegador</th>
+                                        <th class="text-right">S.O.</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="cliente : ${clientes}">
+                                            <td th:text="${cliente.ip}">0.0.0.0</td>
+                                            <td th:text="${cliente.fechaAcceso}">2021-01-01</td>
+                                            <td th:text="${cliente.horaAcceso}">00:00:00</td>
+                                            <td th:text="${cliente.navegador}">Google Chrome</td>
+                                            <td th:text="${cliente.sistemaOperativo}">Windows 10</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
 
+                    <div class="col-md-6">
+                        <div class="card">
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+
+
     <!--   Core JS Files   -->
     <script src="../assets/js/core/jquery.min.js"></script>
     <script src="../assets/js/core/popper.min.js"></script>
