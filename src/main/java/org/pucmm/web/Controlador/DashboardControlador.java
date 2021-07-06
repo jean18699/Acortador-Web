@@ -16,7 +16,7 @@ public class DashboardControlador {
     private Javalin app;
     Map<String, Object> modelo = new HashMap<>();
     Map<String, Object> modeloVistaUsuario = new HashMap<>();
-    private String dominio = "http://localhost:7000/";
+    private String dominio = "shorter.jgshopping.games/";
     Set<LocalDate> fechas;
     List<Long> visitasFechas;
 

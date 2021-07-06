@@ -15,7 +15,7 @@ public class UsuarioControlador {
 
     private Javalin app;
     Map<String, Object> modelo = new HashMap<>();
-    Usuario usuarioSeleccionado;
+
     public UsuarioControlador(Javalin app)
     {
         this.app = app;
