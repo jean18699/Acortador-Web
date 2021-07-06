@@ -26,9 +26,7 @@ public class UsuarioControlador {
     public void aplicarRutas() throws NumberFormatException {
 
         app.get("/usuario/registrarse",ctx ->{
-
             ctx.render("/vistas/templates/registro.html");
-
         });
 
         app.post("/usuario/registrarse",ctx ->{
@@ -48,30 +46,28 @@ public class UsuarioControlador {
         });
 
         app.post("/usuario/registrarse-dashboard",ctx ->{
-
-            boolean isAdmin;
-
-            if(ctx.formParam("admin").equalsIgnoreCase("on"))
+            if(ctx.sessionAttribute("usuario") == null)
             {
-                isAdmin = true;
-            }else
-            {
-                isAdmin = false;
-            }
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                boolean isAdmin;
 
-            if(UsuarioServices.getInstancia().getUsuario(ctx.formParam("usuario")) != null)
-            {
-                ctx.result("El usuario ya existe");
-            }else
-            {
-                Usuario user = new Usuario(ctx.formParam("usuario"), ctx.formParam("password"), ctx.formParam("nombre"), isAdmin);
-
-                if(UsuarioServices.getInstancia().registrarUsuario(user) != null)
-                {
-                    ctx.redirect("/dashboard/usuarios");
+                if (ctx.formParam("admin").equalsIgnoreCase("on")) {
+                    isAdmin = true;
+                } else {
+                    isAdmin = false;
                 }
-                else {
-                    ctx.redirect("/usuario/crear");
+
+                if (UsuarioServices.getInstancia().getUsuario(ctx.formParam("usuario")) != null) {
+                    ctx.result("El usuario ya existe");
+                } else {
+                    Usuario user = new Usuario(ctx.formParam("usuario"), ctx.formParam("password"), ctx.formParam("nombre"), isAdmin);
+
+                    if (UsuarioServices.getInstancia().registrarUsuario(user) != null) {
+                        ctx.redirect("/dashboard/usuarios");
+                    } else {
+                        ctx.redirect("/usuario/crear");
+                    }
                 }
             }
         });
@@ -147,25 +143,40 @@ public class UsuarioControlador {
         });
 
         app.get("/dashboard/usuarios", ctx -> {
-            modelo.put("usuarioActual",ctx.sessionAttribute("usuario"));
-            modelo.put("usuarios",UsuarioServices.getInstancia().getAllUsuarios());
 
-            if(modelo.get("selected") == null)
+            if(ctx.sessionAttribute("usuario") == null)
             {
-                modelo.put("selected", new Usuario("","","",false));
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                modelo.put("usuarioActual", ctx.sessionAttribute("usuario"));
+                modelo.put("usuarios", UsuarioServices.getInstancia().getAllUsuarios());
+
+                if (modelo.get("selected") == null) {
+                    modelo.put("selected", new Usuario("", "", "", false));
+                }
+                ctx.render("/vistas/templates/users.html", modelo);
             }
-            ctx.render("/vistas/templates/users.html",modelo);
         });
 
 
         app.get("/usuario/crear",ctx -> {
-            ctx.render("/vistas/templates/createUser.html",modelo);
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                ctx.render("/vistas/templates/createUser.html", modelo);
+            }
         });
 
         app.post("/usuario/verUsuario",ctx -> {
-            Usuario user = UsuarioServices.getInstancia().getUsuario(ctx.formParam("usuarioLista"));
-            modelo.put("selected",user);
-            ctx.redirect("/dashboard/usuarios");
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                Usuario user = UsuarioServices.getInstancia().getUsuario(ctx.formParam("usuarioLista"));
+                modelo.put("selected", user);
+                ctx.redirect("/dashboard/usuarios");
+            }
         });
 
         app.post("/usuario/eliminar",ctx -> {
@@ -174,19 +185,21 @@ public class UsuarioControlador {
         });
 
         app.post("usuario/editar",ctx -> {
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                if (modelo.get("usuarioActual") == "admin") {
+                    UsuarioServices.getInstancia().editarUsuario(
+                            ctx.formParam("usuario"), ctx.formParam("nombre"), ctx.formParam("password"), true);
+                } else {
+                    UsuarioServices.getInstancia().editarUsuario(
+                            ctx.formParam("usuario"), ctx.formParam("nombre"), ctx.formParam("password"), Boolean.parseBoolean(ctx.formParam("admin")));
+                }
 
-           if(modelo.get("usuarioActual") == "admin")
-           {
-               UsuarioServices.getInstancia().editarUsuario(
-                       ctx.formParam("usuario"),ctx.formParam("nombre"),ctx.formParam("password"),true);
-           }else
-           {
-               UsuarioServices.getInstancia().editarUsuario(
-                       ctx.formParam("usuario"),ctx.formParam("nombre"),ctx.formParam("password"),Boolean.parseBoolean(ctx.formParam("admin")));
-           }
-
-            ctx.redirect("/dashboard/usuarios");
-            modelo.put("selected", new Usuario("","","",false));
+                ctx.redirect("/dashboard/usuarios");
+                modelo.put("selected", new Usuario("", "", "", false));
+            }
         });
 
     }

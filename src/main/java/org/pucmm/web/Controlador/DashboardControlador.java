@@ -70,6 +70,7 @@ public class DashboardControlador {
                 }else
                 {
                     ctx.sessionAttribute("vistaUsuario",ctx.formParam("verUsuario"));
+                    modeloVistaUsuario.put("urlActual", ctx.formParam("url"));
                     modeloVistaUsuario.put("clientes",null);
                     modeloVistaUsuario.put("visitasFechas","");
                     modeloVistaUsuario.put("visitasFechas","");
@@ -85,91 +86,136 @@ public class DashboardControlador {
 
         app.post("/dashboard/infoURLOtro",ctx -> {
 
-            URL url = URLServices.getInstance().getURL(ctx.formParam("url"));
-            fechas = new HashSet<>();
-            visitasFechas = new ArrayList<>();
-
-            for(Cliente cliente : url.getClientes())
+            if(ctx.sessionAttribute("usuario") == null)
             {
-                LocalDate date = cliente.getFechaAcceso();
-                fechas.add(date);
-            }
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                URL url = URLServices.getInstance().getURL(ctx.formParam("url"));
+                fechas = new HashSet<>();
+                visitasFechas = new ArrayList<>();
 
-            for(LocalDate fecha : fechas)
-            {
-                visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
-            }
+                for (Cliente cliente : url.getClientes()) {
+                    LocalDate date = cliente.getFechaAcceso();
+                    fechas.add(date);
+                }
 
-            modeloVistaUsuario.put("urlActual", ctx.formParam("url"));
-            // modelo.put("dominio", dominio);
-            modeloVistaUsuario.put("fechaAcceso", "");
-            modeloVistaUsuario.put("fechas",fechas);
-            modeloVistaUsuario.put("visitasFechas",visitasFechas);
-            //  modelo.put("urls", URLServices.getInstance().getURLs());
-            ctx.render("/vistas/templates/dashboardOtro.html",modeloVistaUsuario);
+                for (LocalDate fecha : fechas) {
+                    visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
+                }
+
+                modeloVistaUsuario.put("urlActual", ctx.formParam("url"));
+                modeloVistaUsuario.put("usuarioActual", UsuarioServices.getInstancia().getUsuario(ctx.sessionAttribute("usuario")));
+                modeloVistaUsuario.put("fechaAcceso", "");
+                modeloVistaUsuario.put("fechas", fechas);
+                modeloVistaUsuario.put("visitasFechas", visitasFechas);
+                modeloVistaUsuario.put("clientes", new HashSet<Cliente>());
+                ctx.render("/vistas/templates/dashboardOtro.html", modeloVistaUsuario);
+            }
         });
 
 
         app.get("/dashboard/infoURL", ctx -> {
-
-            ctx.render("/vistas/templates/dashboard.html",modelo);
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                ctx.render("/vistas/templates/dashboard.html", modelo);
+            }
         });
 
+        app.get("/dashboard/infoURLOtro", ctx -> {
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                ctx.render("/vistas/templates/dashboardOtro.html", modeloVistaUsuario);
+            }
+        });
+
+
         app.post("/dashboard/infoURL", ctx -> {
-
-            System.out.println(ctx.formParam("url"));
-            URL url = URLServices.getInstance().getURL(ctx.formParam("url"));
-            fechas = new HashSet<>();
-            visitasFechas = new ArrayList<>();
-
-            for(Cliente cliente : url.getClientes())
+            if(ctx.sessionAttribute("usuario") == null)
             {
-                LocalDate date = cliente.getFechaAcceso();
-                fechas.add(date);
-            }
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                URL url = URLServices.getInstance().getURL(ctx.formParam("url"));
+                fechas = new HashSet<>();
+                visitasFechas = new ArrayList<>();
 
-            for(LocalDate fecha : fechas)
-            {
-                visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
-            }
+                for (Cliente cliente : url.getClientes()) {
+                    LocalDate date = cliente.getFechaAcceso();
+                    fechas.add(date);
+                }
 
-            modelo.put("urlActual", ctx.formParam("url"));
-            // modelo.put("dominio", dominio);
-            modelo.put("fechaAcceso", "");
-            modelo.put("fechas",fechas);
-            modelo.put("visitasFechas",visitasFechas);
-            //  modelo.put("urls", URLServices.getInstance().getURLs());
-            ctx.render("/vistas/templates/dashboard.html",modelo);
+                for (LocalDate fecha : fechas) {
+                    visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
+                }
+
+                modelo.put("urlActual", ctx.formParam("url"));
+                modelo.put("fechaAcceso", "");
+                modelo.put("clientes", new HashSet<Cliente>());
+                modelo.put("fechas", fechas);
+                modelo.put("visitasFechas", visitasFechas);
+                ctx.render("/vistas/templates/dashboard.html", modelo);
+            }
         });
 
         app.get("/dashboard/infoURL/:url/estadisticas/:fecha",ctx->{
-
-            URL url = URLServices.getInstance().getURL(ctx.pathParam("url"));
-            fechas = new HashSet<>();
-            visitasFechas = new ArrayList<>();
-
-            for(Cliente cliente : url.getClientes())
+            if(ctx.sessionAttribute("usuario") == null)
             {
-                LocalDate date = cliente.getFechaAcceso();
-                fechas.add(date);
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                URL url = URLServices.getInstance().getURL(ctx.pathParam("url"));
+                fechas = new HashSet<>();
+                visitasFechas = new ArrayList<>();
+
+                for (Cliente cliente : url.getClientes()) {
+                    LocalDate date = cliente.getFechaAcceso();
+                    fechas.add(date);
+                }
+
+                for (LocalDate fecha : fechas) {
+                    visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
+                }
+
+
+                modelo.put("fechaAcceso", ctx.pathParam("fecha"));
+                modelo.put("fechas", fechas);
+                modelo.put("visitasFechas", visitasFechas);
+                modelo.put("clientes", URLServices.getInstance().getClientesURLByFecha(
+                        ctx.pathParam("url"), ctx.pathParam("fecha")
+                ));
+                ctx.redirect("/dashboard/infoURL");
             }
-
-            for(LocalDate fecha : fechas)
-            {
-                visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
-            }
-
-
-            modelo.put("fechaAcceso", ctx.pathParam("fecha"));
-            modelo.put("fechas",fechas);
-            modelo.put("visitasFechas",visitasFechas);
-            modelo.put("clientes",URLServices.getInstance().getClientesURLByFecha(
-                    ctx.pathParam("url"), ctx.pathParam("fecha")
-            ));
-            ctx.redirect("/dashboard/infoURL");
         });
 
+        app.get("/dashboard/infoURLOtro/:url/estadisticas/:fecha",ctx->{
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                URL url = URLServices.getInstance().getURL(ctx.pathParam("url"));
+                fechas = new HashSet<>();
+                visitasFechas = new ArrayList<>();
 
+                for (Cliente cliente : url.getClientes()) {
+                    LocalDate date = cliente.getFechaAcceso();
+                    fechas.add(date);
+                }
+
+                for (LocalDate fecha : fechas) {
+                    visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
+                }
+
+                modeloVistaUsuario.put("fechaAcceso", ctx.pathParam("fecha"));
+                modeloVistaUsuario.put("fechas", fechas);
+                modeloVistaUsuario.put("visitasFechas", visitasFechas);
+                modeloVistaUsuario.put("clientes", URLServices.getInstance().getClientesURLByFecha(
+                        ctx.pathParam("url"), ctx.pathParam("fecha")
+                ));
+                ctx.redirect("/dashboard/infoURLOtro");
+            }
+        });
 
     }
 }

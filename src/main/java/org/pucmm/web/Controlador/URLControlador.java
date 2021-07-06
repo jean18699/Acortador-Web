@@ -33,8 +33,6 @@ public class URLControlador {
     public void aplicarRutas() throws NumberFormatException {
 
         app.get("/",ctx -> {
-
-            //modelo.put("urls", ctx.sessionAttribute("urlsGuardadas"+ctx.req.getRemoteAddr()));
             modelo.put("urls", ctx.cookieMap().entrySet());
             ctx.render("vistas/templates/index.html",modelo);
         });
@@ -53,14 +51,24 @@ public class URLControlador {
         });
 
         app.post("/acortar-registrar", ctx -> {
-            URLServices.getInstance().registrarURLUsuario(ctx.sessionAttribute("usuario"), URLServices.getInstance().nuevaUrlAcortada(ctx.formParam("url")));
-            URLServices.getInstance().getUrlsCliente().clear();
-            ctx.redirect("/dashboard");
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                URLServices.getInstance().registrarURLUsuario(ctx.sessionAttribute("usuario"), URLServices.getInstance().nuevaUrlAcortada(ctx.formParam("url")));
+                URLServices.getInstance().getUrlsCliente().clear();
+                ctx.redirect("/dashboard");
+            }
         });
 
         app.post("/url/eliminar", ctx -> {
-            URLServices.getInstance().eliminarURL(ctx.sessionAttribute("vistaUsuario"), ctx.formParam("eliminar"));
-            ctx.redirect("/dashboard/"+ctx.cookie("verUsuario"));
+            if(ctx.sessionAttribute("usuario") == null)
+            {
+                ctx.redirect("/usuario/iniciarSesion");
+            }else {
+                URLServices.getInstance().eliminarURL(ctx.sessionAttribute("vistaUsuario"), ctx.formParam("eliminar"));
+                ctx.redirect("/dashboard/" + ctx.cookie("verUsuario"));
+            }
         });
 
         app.post("/url/eliminar-otro", ctx -> {
@@ -70,6 +78,7 @@ public class URLControlador {
 
 
         app.get("/:url",ctx -> {
+
             if(!ctx.pathParam("url").equalsIgnoreCase("favicon.ico"))
             {
                 ctx.redirect("redireccionar/"+ctx.pathParam("url"));
