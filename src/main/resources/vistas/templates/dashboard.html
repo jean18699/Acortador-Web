@@ -270,7 +270,7 @@
                                             <tbody>
                                             <tr th:each="url : ${urls}">
                                                 <td class="text-left">
-                                                    <a th:text="${dominio}+${url.direccionAcortada}" th:href="'https://'+${dominio}+${url.direccionAcortada}" target="_blank">A</a>
+                                                    <a th:text="${dominio}+${url.direccionAcortada}" th:href="${dominio}+${url.direccionAcortada}" target="_blank">A</a>
                                                 </td>
                                                 <td th:text="${url.getOrigen()}" class="text-left"></td>
                                                 <td class="td-actions text-right">

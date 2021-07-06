@@ -19,7 +19,7 @@ import java.util.Set;
 public class URLControlador {
 
     private Javalin app;
-    private String dominio = "shorter.jgshopping.games/";
+    private String dominio = "https://shorter.jgshopping.games/";
 
     Map<String, Object> modelo = new HashMap<>();
 
