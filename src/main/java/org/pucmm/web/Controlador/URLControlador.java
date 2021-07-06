@@ -93,14 +93,15 @@ public class URLControlador {
             String os = System.getProperty("os.name");
 
             //Para obtener la direccion IP
-            InetAddress ip;
+            URLServices.getInstance().visitar(ctx.pathParam("url"),nombreCliente,ctx.req.getRemoteAddr(),fechaAcceso, horaAcceso, os);
+            /*InetAddress ip;
             try
             {
                 ip = InetAddress.getLocalHost();
                 URLServices.getInstance().visitar(ctx.pathParam("url"),nombreCliente,ip.getHostAddress(),fechaAcceso, horaAcceso, os);
             }catch (UnknownHostException e) {
                 e.printStackTrace();
-            }
+            }*/
 
             String direccion = URLServices.getInstance().expandirURL(ctx.pathParam("url"));
             if(direccion.contains("https:"))
