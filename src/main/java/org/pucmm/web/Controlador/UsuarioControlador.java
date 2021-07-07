@@ -84,7 +84,7 @@ public class UsuarioControlador {
             }else
             {*/
 
-            if(ctx.cookie("usuario_recordado") != null || !ctx.cookie("usuario_recordado").isEmpty())
+            if(ctx.cookie("usuario_recordado") != null)
             {
                 Usuario user = UsuarioServices.getInstancia().getUsuario(ctx.cookie("usuario_recordado"));
                 if(user != null)
