@@ -75,17 +75,17 @@ public class UsuarioControlador {
 
         app.get("/usuario/iniciarSesion",ctx ->{
 
-            if(ctx.cookie("usuario_recordado") != null && ctx.cookie("password_recordado") !=null)
+           /* if(ctx.cookie("usuario_recordado") != null && ctx.cookie("password_recordado") !=null)
             {
                 String usuario = ctx.cookie("usuario_recordado");
                 ctx.sessionAttribute("usuario", usuario);
                 ctx.sessionAttribute("vistaUsuario", usuario);
                 ctx.redirect("/dashboard");
             }else
-            {
+            {*/
                 ctx.sessionAttribute("usuario",null);
                 ctx.render("/vistas/templates/login.html");
-            }
+          //  }
 
         });
 
