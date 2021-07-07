@@ -77,11 +77,13 @@ public class UsuarioControlador {
 
             if(ctx.cookie("usuario_recordado") != null && ctx.cookie("password_recordado") !=null)
             {
-                ctx.sessionAttribute("usuario", ctx.cookie("usuario_recordado"));
-                ctx.sessionAttribute("vistaUsuario", ctx.cookie("usuario_recordado"));
+                String usuario = ctx.cookie("usuario_recordado");
+                ctx.sessionAttribute("usuario", usuario);
+                ctx.sessionAttribute("vistaUsuario", usuario);
                 ctx.redirect("/dashboard");
             }else
             {
+                ctx.sessionAttribute("usuario",null);
                 ctx.render("/vistas/templates/login.html");
             }
 
@@ -100,6 +102,7 @@ public class UsuarioControlador {
             {
                 ctx.sessionAttribute("usuario", null);
                 ctx.sessionAttribute("vistaUsuario", null);
+                ctx.req.getSession().invalidate();
             }
 
             ctx.redirect("/");

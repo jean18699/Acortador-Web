@@ -5,6 +5,7 @@ import io.javalin.plugin.rendering.JavalinRenderer;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
 import org.pucmm.web.Modelo.Cliente;
 import org.pucmm.web.Modelo.URL;
+import org.pucmm.web.Modelo.Usuario;
 import org.pucmm.web.Servicio.URLServices;
 import org.pucmm.web.Servicio.UsuarioServices;
 
@@ -32,28 +33,40 @@ public class DashboardControlador {
 
         app.get("/dashboard", ctx -> {
 
-            if(ctx.sessionAttribute("usuario") == null)
+            if(ctx.sessionAttribute("usuario") == null || ctx.sessionAttribute("usuario")=="")
             {
                 ctx.redirect("/usuario/iniciarSesion");
             }else
             {
-                //Colocando las URL almacenadas en la cookie dentro de la cuenta del usuario
-                for(Map.Entry<String, String> urlCliente : ctx.cookieMap().entrySet())
+                Usuario user =  UsuarioServices.getInstancia().getUsuario(ctx.sessionAttribute("usuario"));
+
+                if(user != null)
                 {
-                    URL url = URLServices.getInstance().getURL(urlCliente.getKey());
-                    if(url != null)
+                    //Colocando las URL almacenadas en la cookie dentro de la cuenta del usuario
+                    for(Map.Entry<String, String> urlCliente : ctx.cookieMap().entrySet())
                     {
-                        URLServices.getInstance().registrarURLUsuario(ctx.sessionAttribute("usuario"),url);
-                        ctx.removeCookie(urlCliente.getKey());
+                        if(!urlCliente.getKey().equalsIgnoreCase("usuario_recordado") || urlCliente.getKey().equalsIgnoreCase("password_recordado"))
+                        {
+                            URL url = URLServices.getInstance().getURL(urlCliente.getKey());
+                            if(url != null)
+                            {
+                                if(!UsuarioServices.getInstancia().getURLsByUsuario(user.getNombreUsuario()).contains(url))
+                                {
+                                    URLServices.getInstance().registrarURLUsuario(user.getNombreUsuario(),url);
+                                    ctx.removeCookie(urlCliente.getKey());
+                                }
+                            }
+                        }
                     }
+
+                    modelo.put("clientes",null);
+                    modelo.put("visitasFechas","");
+                    modelo.put("visitasFechas","");
+                    modelo.put("usuarioActual", UsuarioServices.getInstancia().getUsuario(user.getNombreUsuario()));
+                    modelo.put("urls", UsuarioServices.getInstancia().getURLsByUsuario(user.getNombreUsuario()));
+                    ctx.render("/vistas/templates/dashboard.html",modelo);
                 }
 
-                modelo.put("clientes",null);
-                modelo.put("visitasFechas","");
-                modelo.put("visitasFechas","");
-                modelo.put("usuarioActual", UsuarioServices.getInstancia().getUsuario(ctx.sessionAttribute("usuario")));
-                modelo.put("urls", UsuarioServices.getInstancia().getURLsByUsuario(ctx.sessionAttribute("usuario")));
-                ctx.render("/vistas/templates/dashboard.html",modelo);
             }
         });
 
