@@ -115,7 +115,7 @@ public class URLServices {
                 clave += caracteres[rand.nextInt(62)];
             }
 
-            //Si la clave se encuentra en el mapa de claves (keymap) significa que ya existe y se termina la generacion
+            //Si la clave no se encuentra en la base de datos significa que no existe y que se puede usar, terminando asi la generacion
             if (gestionDb.find(clave) == null) {
                 break;
             }
