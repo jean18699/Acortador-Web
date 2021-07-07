@@ -75,15 +75,6 @@ public class UsuarioControlador {
 
         app.get("/usuario/iniciarSesion",ctx ->{
 
-           /* if(ctx.cookie("usuario_recordado") != null && ctx.cookie("password_recordado") !=null)
-            {
-                String usuario = ctx.cookie("usuario_recordado");
-                ctx.sessionAttribute("usuario", usuario);
-                ctx.sessionAttribute("vistaUsuario", usuario);
-                ctx.redirect("/dashboard");
-            }else
-            {*/
-
             if(ctx.cookie("usuario_recordado") != null)
             {
                 Usuario user = UsuarioServices.getInstancia().getUsuario(ctx.cookie("usuario_recordado"));
@@ -104,25 +95,6 @@ public class UsuarioControlador {
             {
                 ctx.render("/vistas/templates/login.html");
             }
-       /*         if(ctx.cookie("usuario_recordado") != null || ctx.cookie("usuario_recordado") != "")
-                {
-
-                    Usuario user = UsuarioServices.getInstancia().getUsuario(ctx.cookie("usuario_recordado"));
-                    if(user != null)
-                    {
-                        ctx.sessionAttribute("usuario", user.getNombreUsuario());
-                        ctx.sessionAttribute("vistaUsuario", user.getNombreUsuario());
-                    }else
-                    {
-                        ctx.render("/vistas/templates/login.html");
-                    }
-                }else
-                {
-                    ctx.render("/vistas/templates/login.html");
-                }
-
-
-          //  }*/
 
         });
 

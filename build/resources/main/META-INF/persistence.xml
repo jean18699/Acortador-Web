@@ -9,8 +9,6 @@
         <class>org.pucmm.web.Modelo.URL</class>
         <class>org.pucmm.web.Modelo.Cliente</class>
         <class>org.pucmm.web.Modelo.Usuario</class>
-        <!--<class>org.pucmm.jean.Modelo.Producto</class>
-        <class>org.pucmm.jean.Modelo.Producto_Comprado</class>-->
         <properties> <!--Propiedades para la conexion a la BD -->
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/acortador" />
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" /> <!--Driver H2 -->

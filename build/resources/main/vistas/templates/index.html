@@ -78,20 +78,17 @@
                 <ul style="background: white;color:cornflowerblue;padding-left: 1%; padding-right:15%; width: 88%; margin-left: 3%; border-radius: 5px" class="list-inline">
 
                     <div th:each="url : ${urls}" class="row">
-
-                        <div class="col-7">
-                           <strong><li th:text="${url.getOrigen()}" style="color:black" class="list-inline-item"></li></strong>
+                      <div th:if="${url.getKey()} != 'JSESSIONID' ">
+                        <div class="col-10">
+                           <strong><li th:text="${url.getValue()}" style="color:black" class="list-inline-item"></li></strong>
                         </div>
                         <div class="col-2">
                             <span><strong>
-                                <a th:text="${dominio}+${url.getDireccionAcortada()}" th:href="${dominio}+${url.getDireccionAcortada()}" target="_blank">A</a>
+                                <a th:text="${dominio}+${url.getKey()}" th:href="${dominio}+${url.getKey()}" target="_blank">A</a>
                             </strong></span>
                         </div>
-                        <div th:if="${url.getCantidadClientes() != null}" class="col-5">
-                            <strong><li th:text="${url.getCantidadClientes()}" style="color:black" class="list-inline-item"></li></strong>
-                        </div>
                       </div>
-
+                    </div>
                 </ul>
 
         </div>
