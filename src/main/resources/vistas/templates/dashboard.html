@@ -290,14 +290,22 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-footer">
-                                <div class="row">
 
-                                    <form class="form-control" style="width:100%" th:action="@{/acortar-registrar}" method="post">
-                                        <input type="text" name="url" class="form-control" style="width: 100%" placeholder="Ingrese URL a acortar" required>
-                                        <button formmethod="post" name="acortar" type="submit" style="border-radius: 5px" class="btn btn-primary">Acortar</button>
-                                    </form>
-                                </div>
+                            <div class="card-footer">
+                                <form th:action="@{/acortar-registrar}" method="post">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <input type="text" name="url" class="form-control"  placeholder="Ingrese URL a acortar" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">&nbsp;</div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button formmethod="post" name="acortar" type="submit" style="border-radius: 5px" class="btn btn-primary">Acortar</button>
+                                        </div>
+                                    </div>
+                                </form>
+
                             </div>
                         </div>
                     </div>

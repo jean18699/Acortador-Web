@@ -75,15 +75,24 @@ public class UsuarioControlador {
 
         app.get("/usuario/iniciarSesion",ctx ->{
 
-            if(ctx.cookie("usuario_recordado") != null && ctx.cookie("password_recordado") !=null)
+            if(ctx.cookie("usuario_recordado") != null)
             {
-                String usuario = ctx.cookie("usuario_recordado");
-                ctx.sessionAttribute("usuario", usuario);
-                ctx.sessionAttribute("vistaUsuario", usuario);
-                ctx.redirect("/dashboard");
-            }else
+                Usuario user = UsuarioServices.getInstancia().getUsuario(ctx.cookie("usuario_recordado"));
+                if(user != null)
+                {
+                    ctx.sessionAttribute("usuario", user.getNombreUsuario());
+                    ctx.sessionAttribute("vistaUsuario", user.getNombreUsuario());
+                    ctx.redirect("/dashboard");
+                }else
+                {
+                    ctx.result("El usuario guardado ya no se encuentra disponible");
+                    Cookie cookie_usuario = new Cookie("usuario_recordado",ctx.formParam(""));
+                    cookie_usuario.setMaxAge(0);
+                    ctx.res.addCookie(cookie_usuario);
+                }
+            }
+            else
             {
-                ctx.sessionAttribute("usuario",null);
                 ctx.render("/vistas/templates/login.html");
             }
 
@@ -111,7 +120,6 @@ public class UsuarioControlador {
 
 
         app.post("/usuario/iniciarSesion",ctx ->{
-
 
             if (UsuarioServices.getInstancia().getUsuario(ctx.formParam("nombreUsuario")) != null) { //Si el usuario existe...
                 if (!UsuarioServices.getInstancia().getUsuario(ctx.formParam("nombreUsuario")).getPassword().equals(ctx.formParam("password"))) { //Si sus credenciales NO son correctas...

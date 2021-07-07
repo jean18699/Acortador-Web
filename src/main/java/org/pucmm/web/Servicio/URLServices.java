@@ -12,8 +12,8 @@ import java.util.*;
 public class URLServices {
 
     private static URLServices instancia;
-    private HashMap<String, String> keyMap; // key-url map
-    private HashMap<String, String> valueMap;// url-key map to quickly check
+    private HashMap<String, String> mapaClave; // mapa clave-url
+    private HashMap<String, String> mapaValor;//  mapa para validaciones
 
     private char caracteres[]; //Variable donde almacenaremos los 62 posibles caracteres de una URL
     private int longitud_url;
@@ -23,10 +23,10 @@ public class URLServices {
 
     public URLServices()
     {
-        keyMap = new HashMap<String, String>();
-        valueMap = new HashMap<String, String>();
+        mapaClave = new HashMap<String, String>();
+        mapaValor = new HashMap<String, String>();
         urlsCliente = new HashSet<>();
-        longitud_url = 5;
+        longitud_url = 6;
 
         String alfabeto = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         int cantidad_letras = alfabeto.length();
@@ -73,15 +73,6 @@ public class URLServices {
             em.close();
         }
 
-
-       /* if (valueMap.containsKey(url)) {
-           //url = dominioURL + "/" + valueMap.get(url);
-            url = valueMap.get(url);
-        } else {
-            //urlAcortada = dominioURL + "/" + getClave(url);
-        }
-*/
-
     }
 
 
@@ -109,8 +100,8 @@ public class URLServices {
 
     private String getClave(String longURL) {
         String clave = generarClave();
-        keyMap.put(clave, longURL);
-        valueMap.put(longURL, clave);
+        mapaClave.put(clave, longURL);
+        mapaValor.put(longURL, clave);
         return clave;
     }
 
@@ -125,12 +116,12 @@ public class URLServices {
             clave = "";
 
             //Se va a ir creando una clave aleatorea
-            for (int i = 0; i <= longitud_url; i++) {
+            for (int i = 1; i <= longitud_url; i++) {
                 clave += caracteres[rand.nextInt(62)];
             }
 
             //Si la clave se encuentra en el mapa de claves (keymap) significa que ya existe y se termina la generacion
-            if (!keyMap.containsKey(clave)) {
+            if (!mapaClave.containsKey(clave)) {
                 break;
             }
         }
@@ -165,18 +156,29 @@ public class URLServices {
 
     public void eliminarURL(String userId, String urlAcortada)
     {
-        //URL url = (URL) gestionDb.find(urlAcortada);
-        GestionDb gestionUser = new GestionDb(Usuario.class);
-        Usuario user = (Usuario) gestionUser.find(userId);
-        for(URL url : user.getUrls())
+        GestionDb gestionUsuario = new GestionDb(Usuario.class);
+
+
+        EntityManager em = gestionUsuario.getEntityManager();
+        EntityManager emURL = gestionDb.getEntityManager();
+
+        try
         {
-            if(url.getDireccionAcortada().equalsIgnoreCase(urlAcortada))
-            {
-                user.getUrls().remove(url);
-            }
+           Usuario user =  em.find(Usuario.class,userId);
+           URL url = em.find(URL.class,urlAcortada);
+
+           em.getTransaction().begin();
+           user.getUrls().remove(url);
+           em.merge(user);
+           em.getTransaction().commit();
+
+           gestionDb.eliminar(urlAcortada);
+
         }
-        gestionUser.editar(user);
-        gestionDb.eliminar(urlAcortada);
+        finally {
+            em.close();
+            emURL.close();
+        }
     }
 
     public void visitar(String urlAcortada, String navegador, String direccionIP, LocalDate fechaAcceso, LocalTime horaAcceso, String sistemaOperativo)

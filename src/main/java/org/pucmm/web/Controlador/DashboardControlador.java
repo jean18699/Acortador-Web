@@ -31,7 +31,7 @@ public class DashboardControlador {
 
     public void aplicarRutas() throws NumberFormatException {
 
-        app.get("/dashboard", ctx -> {
+       app.get("/dashboard", ctx -> {
 
             if(ctx.sessionAttribute("usuario") == null || ctx.sessionAttribute("usuario")=="")
             {
