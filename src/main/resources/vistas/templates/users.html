@@ -147,7 +147,7 @@
                   <div th:if="${usuarioActual == 'admin' and selected.getNombreUsuario() != 'admin'}" class="form-group">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input name="admin" th:checked="${selected.isAdmin()}" th:value="${selected.isAdmin()}" class="form-check-input" type="checkbox"> Administrador
+                        <input name="admin" th:checked="${selected.isAdmin()}" value="checked" class="form-check-input" type="checkbox"> Administrador
                         <span class="form-check-sign">
                           <span class="check"></span>
                         </span>

@@ -46,13 +46,15 @@ public class UsuarioControlador {
         });
 
         app.post("/usuario/registrarse-dashboard",ctx ->{
+
+           System.out.println(ctx.formParam("admin"));
             if(ctx.sessionAttribute("usuario") == null)
             {
                 ctx.redirect("/usuario/iniciarSesion");
             }else {
                 boolean isAdmin;
 
-                if (ctx.formParam("admin").equalsIgnoreCase("on")) {
+                if (ctx.formParam("admin")!= null) {
                     isAdmin = true;
                 } else {
                     isAdmin = false;
@@ -150,6 +152,9 @@ public class UsuarioControlador {
                     ctx.sessionAttribute("vistaUsuario", ctx.formParam("nombreUsuario")); //Una variable separada para ver a un usuario diferente
                     ctx.redirect("/dashboard");
                 }
+            }else //Si el usuario no existe...
+            {
+                ctx.result("Este usuario no se encuentra registrado");
             }
         });
 
@@ -192,10 +197,14 @@ public class UsuarioControlador {
 
         app.post("/usuario/eliminar",ctx -> {
             UsuarioServices.getInstancia().eliminarUsuario(ctx.formParam("eliminar"));
+            modelo.put("selected", new Usuario("", "", "", false));
             ctx.redirect("/dashboard/usuarios");
         });
 
         app.post("usuario/editar",ctx -> {
+
+
+
             if(ctx.sessionAttribute("usuario") == null)
             {
                 ctx.redirect("/usuario/iniciarSesion");
@@ -204,8 +213,13 @@ public class UsuarioControlador {
                     UsuarioServices.getInstancia().editarUsuario(
                             ctx.formParam("usuario"), ctx.formParam("nombre"), ctx.formParam("password"), true);
                 } else {
-                    UsuarioServices.getInstancia().editarUsuario(
-                            ctx.formParam("usuario"), ctx.formParam("nombre"), ctx.formParam("password"), Boolean.parseBoolean(ctx.formParam("admin")));
+                    if(ctx.formParam("admin") != null)
+                    {
+                         UsuarioServices.getInstancia().editarUsuario(ctx.formParam("usuario"), ctx.formParam("nombre"), ctx.formParam("password"), true);
+                    }else
+                    {
+                        UsuarioServices.getInstancia().editarUsuario(ctx.formParam("usuario"), ctx.formParam("nombre"), ctx.formParam("password"), false);
+                    }
                 }
 
                 ctx.redirect("/dashboard/usuarios");

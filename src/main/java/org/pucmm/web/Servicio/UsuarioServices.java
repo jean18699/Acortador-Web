@@ -3,6 +3,7 @@ package org.pucmm.web.Servicio;
 import org.pucmm.web.Modelo.URL;
 import org.pucmm.web.Modelo.Usuario;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Set;
 
@@ -76,10 +77,18 @@ public class UsuarioServices {
     public Usuario editarUsuario(String idUser, String nombre, String password, boolean admin)
     {
         Usuario user = (Usuario) gestionDb.find(idUser);
-        user.setAdmin(admin);
-        user.setNombre(nombre);
-        user.setPassword(password);
-        gestionDb.editar(user);
+        EntityManager em = gestionDb.getEntityManager();
+        try{
+            em.getTransaction().begin();
+            user.setAdmin(admin);
+            user.setNombre(nombre);
+            user.setPassword(password);
+            em.merge(user);
+            em.getTransaction().commit();
+        }finally
+        {
+            em.close();
+        }
 
         return user;
     }

@@ -91,7 +91,7 @@ public class URLControlador {
             //Sistema operativo
             String os = System.getProperty("os.name");
 
-            URLServices.getInstance().visitar(ctx.pathParam("url"),nombreCliente,ctx.req.getRemoteAddr(),fechaAcceso, horaAcceso, os);
+            URLServices.getInstance().visitar(ctx.pathParam("url"),nombreCliente,ctx.host(),fechaAcceso, horaAcceso, os);
             String direccion = URLServices.getInstance().expandirURL(ctx.pathParam("url"));
             if(direccion.contains("https:"))
             {

@@ -291,13 +291,26 @@ public class URLServices {
         GestionDb gestionUsuario = new GestionDb(Usuario.class);
         Usuario user = (Usuario) gestionUsuario.find(idUser);
 
-        if(gestionDb.find(url.getDireccionAcortada()) == null)
-        {
-            gestionDb.crear(url);
-        }
+        EntityManager emUsuario = gestionUsuario.getEntityManager();
+        EntityManager emURL = gestionDb.getEntityManager();
 
-        user.getUrls().add(url);
-        gestionDb.editar(user);
+        try
+        {
+            emURL.getTransaction().begin();
+                if(gestionDb.find(url.getDireccionAcortada()) == null)
+                {
+                    emURL.persist(url);
+                }
+            emURL.getTransaction().commit();
+
+            emUsuario.getTransaction().begin();
+                user.getUrls().add(url);
+                emUsuario.merge(user);
+            emUsuario.getTransaction().commit();
+        }finally {
+            emURL.close();
+            emUsuario.close();
+        }
     }
 
 }
