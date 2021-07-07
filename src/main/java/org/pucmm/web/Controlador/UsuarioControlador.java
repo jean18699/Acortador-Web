@@ -84,8 +84,29 @@ public class UsuarioControlador {
             }else
             {*/
 
-                if(ctx.cookie("usuario_recordado") != null)
+            if(ctx.cookie("usuario_recordado") != null || !ctx.cookie("usuario_recordado").isEmpty())
+            {
+                Usuario user = UsuarioServices.getInstancia().getUsuario(ctx.cookie("usuario_recordado"));
+                if(user != null)
                 {
+                    ctx.sessionAttribute("usuario", user.getNombreUsuario());
+                    ctx.sessionAttribute("vistaUsuario", user.getNombreUsuario());
+                    ctx.redirect("/dashboard");
+                }else
+                {
+                    ctx.result("El usuario guardado ya no se encuentra disponible");
+                    Cookie cookie_usuario = new Cookie("usuario_recordado",ctx.formParam(""));
+                    cookie_usuario.setMaxAge(0);
+                    ctx.res.addCookie(cookie_usuario);
+                }
+            }
+            else
+            {
+                ctx.render("/vistas/templates/login.html");
+            }
+       /*         if(ctx.cookie("usuario_recordado") != null || ctx.cookie("usuario_recordado") != "")
+                {
+
                     Usuario user = UsuarioServices.getInstancia().getUsuario(ctx.cookie("usuario_recordado"));
                     if(user != null)
                     {
@@ -100,8 +121,8 @@ public class UsuarioControlador {
                     ctx.render("/vistas/templates/login.html");
                 }
 
-               
-          //  }
+
+          //  }*/
 
         });
 
@@ -127,7 +148,6 @@ public class UsuarioControlador {
 
 
         app.post("/usuario/iniciarSesion",ctx ->{
-
 
             if (UsuarioServices.getInstancia().getUsuario(ctx.formParam("nombreUsuario")) != null) { //Si el usuario existe...
                 if (!UsuarioServices.getInstancia().getUsuario(ctx.formParam("nombreUsuario")).getPassword().equals(ctx.formParam("password"))) { //Si sus credenciales NO son correctas...
