@@ -12,8 +12,8 @@ import java.util.*;
 public class URLServices {
 
     private static URLServices instancia;
-    private HashMap<String, String> mapaClave; // mapa clave-url
-    private HashMap<String, String> mapaValor;//  mapa para validaciones
+   // private HashMap<String, String> mapaClave; // mapa clave-url
+    //private HashMap<String, String> mapaValor;//  mapa para validaciones
 
     private char caracteres[]; //Variable donde almacenaremos los 62 posibles caracteres de una URL
     private int longitud_url;
@@ -23,8 +23,6 @@ public class URLServices {
 
     public URLServices()
     {
-        mapaClave = new HashMap<String, String>();
-        mapaValor = new HashMap<String, String>();
         urlsCliente = new HashSet<>();
         longitud_url = 6;
 
@@ -50,7 +48,7 @@ public class URLServices {
         return instancia;
     }
 
-
+    //Funcionar para retornar una URL acortada para ser utilizada
     private String acortarURL(String url)
     {
         EntityManager em = gestionDb.getEntityManager();
@@ -72,10 +70,9 @@ public class URLServices {
         }finally {
             em.close();
         }
-
     }
 
-
+    //Buscar en la base de datos la URL original y retornarla
     public String expandirURL(String urlAcortada)
     {
         URL url = (URL) gestionDb.find(urlAcortada);
@@ -100,13 +97,11 @@ public class URLServices {
 
     private String getClave(String longURL) {
         String clave = generarClave();
-        mapaClave.put(clave, longURL);
-        mapaValor.put(longURL, clave);
         return clave;
     }
 
 
-    //Funcion para generar la clave de 5 digitos de la url
+    //Funcion para generar la clave de 6 digitos de la url
     private String generarClave() {
 
         Random rand = new Random();
@@ -121,14 +116,11 @@ public class URLServices {
             }
 
             //Si la clave se encuentra en el mapa de claves (keymap) significa que ya existe y se termina la generacion
-            if (!mapaClave.containsKey(clave)) {
+            if (gestionDb.find(clave) == null) {
                 break;
             }
         }
         return clave;
-
-
-
     }
 
     public URL nuevaUrlAcortada(String url)
