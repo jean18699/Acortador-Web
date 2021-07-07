@@ -83,8 +83,24 @@ public class UsuarioControlador {
                 ctx.redirect("/dashboard");
             }else
             {*/
-                ctx.sessionAttribute("usuario",null);
-                ctx.render("/vistas/templates/login.html");
+
+                if(ctx.cookie("usuario_recordado") != null)
+                {
+                    Usuario user = UsuarioServices.getInstancia().getUsuario(ctx.cookie("usuario_recordado"));
+                    if(user != null)
+                    {
+                        ctx.sessionAttribute("usuario", user.getNombreUsuario());
+                        ctx.sessionAttribute("vistaUsuario", user.getNombreUsuario());
+                    }else
+                    {
+                        ctx.render("/vistas/templates/login.html");
+                    }
+                }else
+                {
+                    ctx.render("/vistas/templates/login.html");
+                }
+
+               
           //  }
 
         });
