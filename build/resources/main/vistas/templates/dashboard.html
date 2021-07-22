@@ -18,6 +18,7 @@
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link href="../assets/demo/demo.css" rel="stylesheet" />
     <link href="../assets/css/tablas.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -123,10 +124,15 @@
                     <script>
 
                         var fechas = [];
+                        var urlActual = [];
 
                         /*<![CDATA[*/
                         var cantidadVisitas = [(@{${visitasFechas}})];
                         /*]]>*/
+
+                        /*[# th:each="url : ${urlActual}"]*/
+                        urlActual.push("[(${url})]");
+                        ///*[/]*/
 
                         /*[# th:each="fecha : ${fechas}"]*/
                          fechas.push("[(${fecha})]");
@@ -134,7 +140,10 @@
 
                         //Funcion para cargar el historial de acceso cuando se clickee una barra en el dashboard. Asi se vera el acceso obtenido desde esa fecha
                         function graphClickEvent(event, array){
-                            window.location = window.location.href+"/"+fechas[array[0].index]
+
+                            var enlace =  window.location.href +"/"+urlActual[0]+"/estadisticas/"+fechas[array[0].index].toString()//window.location.href+"/"+urlActual[0]+"/"+fechas[array[0].index].toString()
+                            window.location.replace(enlace)
+
                         }
 
 
@@ -231,7 +240,38 @@
             </div>
             <div class="content">
                 <div class="row">
-                    <div class="col-md-6">&nbsp;</div>
+                    <div class="col-md-6">
+
+                            <div class="card  card-tasks">
+                                <div class="card-header ">
+                                    <h4 class="card-title">URLs Registradas</h4>
+                                </div>
+                                <div class="card-body ">
+                                    <div class="table-full-width table-responsive">
+                                        <table class="table">
+                                            <tbody>
+                                            <tr th:each="url : ${urls}">
+                                                <td class="text-left">
+                                                    <a th:text="${dominio}+${url.direccionAcortada}" th:href="${dominio}+${url.direccionAcortada}" target="_blank">A</a>
+                                                </td>
+                                                <td th:text="${url.getOrigen()}" class="text-left"></td>
+                                               <td class="td-actions text-right">
+                                                   <form th:action="@{/dashboard/infoURL}" method="post">
+                                                       <button name="url" th:value="${url.direccionAcortada}" type="submit" rel="tooltip" title="" class="btn btn-info btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Edit Task">
+                                                           <i class="now-ui-icons business_chart-bar-32"></i>
+                                                       </button>
+                                                   </form>
+                                                       <button type="button" rel="tooltip" title="" class="btn btn-danger btn-round btn-icon btn-icon-mini btn-neutral" data-original-title="Remove">
+                                                           <i class="now-ui-icons ui-1_simple-remove"></i>
+                                                       </button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
                     <div class="col-md-6">
                         <div class="card card-chart">
                             <div class="card-header">
@@ -242,7 +282,7 @@
                                 <div class="table-wrapper-scroll-y my-custom-scrollbar">
                                     <div class="table-responsive">
                                     <table style="font-size: 13px" class="table">
-                                        <thead class=" text-primary">
+                                        <thead class="text-primary">
                                         <th>IP</th>
                                         <th>Fecha Acceso</th>
                                         <th>HoraAcceso</th>
@@ -250,13 +290,16 @@
                                         <th class="text-right">S.O.</th>
                                         </thead>
                                         <tbody>
-                                        <tr th:each="cliente : ${clientes}">
-                                            <td th:text="${cliente.ip}">0.0.0.0</td>
-                                            <td th:text="${cliente.fechaAcceso}">2021-01-01</td>
-                                            <td th:text="${cliente.horaAcceso}">00:00:00</td>
-                                            <td th:text="${cliente.navegador}">Google Chrome</td>
-                                            <td th:text="${cliente.sistemaOperativo}">Windows 10</td>
-                                        </tr>
+                                        <div th:if="${clientes != null}">
+                                            <tr th:each="cliente : ${clientes}">
+                                                <td th:text="${cliente.ip}">0.0.0.0</td>
+                                                <td th:text="${cliente.fechaAcceso}">2021-01-01</td>
+                                                <td th:text="${cliente.horaAcceso}">00:00:00</td>
+                                                <td th:text="${cliente.navegador}">Google Chrome</td>
+                                                <td th:text="${cliente.sistemaOperativo}">Windows 10</td>
+                                            </tr>
+                                        </div>
+
                                         </tbody>
                                     </table>
                                 </div>

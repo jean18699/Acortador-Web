@@ -16,39 +16,45 @@ public class DashboardControlador {
 
     private Javalin app;
     Map<String, Object> modelo = new HashMap<>();
+    private String dominio = "http://localhost:7000/";
+    Set<LocalDate> fechas;
+    List<Long> visitasFechas;
 
     public DashboardControlador(Javalin app)
     {
         this.app = app;
         JavalinRenderer.register(JavalinThymeleaf.INSTANCE, ".html");
+        modelo.put("dominio", dominio);
+
+
     }
 
 
     public void aplicarRutas() throws NumberFormatException {
 
-        app.get("/dashboard/example", ctx -> {
-
-            ctx.render("/ejemplos/now-ui/examples/dashboard.html",modelo);
-        });
-
         app.get("/dashboard", ctx -> {
-
-            modelo.put("visitasFechas","");
-            modelo.put("fechas","");
-            modelo.put("urls", URLServices.getInstance().getURLs());
+                modelo.put("clientes",null);
+                modelo.put("visitasFechas","");
+                modelo.put("visitasFechas","");
+                modelo.put("urls", URLServices.getInstance().getURLs());
             ctx.render("/vistas/templates/dashboard.html",modelo);
         });
 
-        app.get("/dashboard/:url", ctx -> {
+        app.get("/dashboard/infoURL", ctx -> {
 
-            URL url = URLServices.getInstance().getURL(ctx.pathParam("url"));
+            ctx.render("/vistas/templates/dashboard.html",modelo);
+        });
 
-            Set<LocalDate> fechas = new HashSet<>();
-            List<Long> visitasFechas = new ArrayList<>();
+        app.post("/dashboard/infoURL", ctx -> {
+
+            System.out.println(ctx.formParam("url"));
+            URL url = URLServices.getInstance().getURL(ctx.formParam("url"));
+            fechas = new HashSet<>();
+            visitasFechas = new ArrayList<>();
 
             for(Cliente cliente : url.getClientes())
             {
-               LocalDate date = cliente.getFechaAcceso();//Date.from(cliente.getFechaAcceso().atStartOfDay(ZoneId.systemDefault()).toInstant());
+               LocalDate date = cliente.getFechaAcceso();
                fechas.add(date);
             }
 
@@ -57,23 +63,41 @@ public class DashboardControlador {
                 visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
             }
 
-
+            modelo.put("urlActual", ctx.formParam("url"));
+           // modelo.put("dominio", dominio);
             modelo.put("fechaAcceso", "");
             modelo.put("fechas",fechas);
             modelo.put("visitasFechas",visitasFechas);
-            modelo.put("urls", URLServices.getInstance().getURLs());
+          //  modelo.put("urls", URLServices.getInstance().getURLs());
             ctx.render("/vistas/templates/dashboard.html",modelo);
         });
 
-        app.get("/dashboard/:url/:fecha",ctx->{
+        app.get("/dashboard/infoURL/:url/estadisticas/:fecha",ctx->{
+
+            URL url = URLServices.getInstance().getURL(ctx.pathParam("url"));
+            fechas = new HashSet<>();
+            visitasFechas = new ArrayList<>();
+
+            for(Cliente cliente : url.getClientes())
+            {
+                LocalDate date = cliente.getFechaAcceso();//Date.from(cliente.getFechaAcceso().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                fechas.add(date);
+            }
+
+            for(LocalDate fecha : fechas)
+            {
+                visitasFechas.add(URLServices.getInstance().getCantidadVisitasFecha(url.getDireccionAcortada(), fecha.toString()));
+            }
+
+
             modelo.put("fechaAcceso", ctx.pathParam("fecha"));
+            modelo.put("fechas",fechas);
+            modelo.put("visitasFechas",visitasFechas);
             modelo.put("clientes",URLServices.getInstance().getClientesURLByFecha(
                     ctx.pathParam("url"), ctx.pathParam("fecha")
             ));
-            ctx.redirect("/dashboard/"+ctx.pathParam("url"));
+            ctx.redirect("/dashboard/infoURL");
         });
-
-        
 
         app.get("/dashboard/usuarios", ctx -> {
             ctx.result("vista usuarios");

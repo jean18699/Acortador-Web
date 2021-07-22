@@ -8,3 +8,8 @@
 .table-wrapper-scroll-y {
     display: block;
 }
+
+input[type=radio] {
+    width: 20px;
+    height: 20px;
+}
