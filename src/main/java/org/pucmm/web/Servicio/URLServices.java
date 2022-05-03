@@ -12,8 +12,7 @@ import java.util.*;
 public class URLServices {
 
     private static URLServices instancia;
-   // private HashMap<String, String> mapaClave; // mapa clave-url
-    //private HashMap<String, String> mapaValor;//  mapa para validaciones
+
 
     private char caracteres[]; //Variable donde almacenaremos los 62 posibles caracteres de una URL
     private int longitud_url;

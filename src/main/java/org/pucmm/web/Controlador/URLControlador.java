@@ -23,7 +23,8 @@ import java.util.Set;
 public class URLControlador {
 
     private Javalin app;
-    private String dominio = "https://shorter.jgshopping.games/";
+    //private String dominio = "https://shorter.jgshopping.games/";
+    private String dominio = "http://localhost:7000/";
 
     Map<String, Object> modelo = new HashMap<>();
 
